@@ -330,77 +330,55 @@ def _update_history_cmd(cube):
 
 def _write_metadata(cubes, filename):
     """Check for metadata in the cubes and write out external files"""
-        #check what attributes are in each cube
-    #check if any of the attributes have the same name
-    #if they do check if they are the same
-    #if so write out only one
-    #if not append one to the other
     license = []
     license_names = []
     attribution = []
     attribution_names = []
     restrictions = []
     restrictions_names = []
-    # Get all of the approved attributes and put them into a list
     for cube in cubes:
         for key,value in cube.attributes.items():
             if key == 'license':
                 license.append(value)
-                license_names.append(cube.name)
+                license_names.append(cube.name())
             if key == 'attribution':
                 attribution.append(value)
+                attribution_names.append(cube.name())
             else:
                 restrictions.append(value)
+                restrictions_names.append(cube.name())
     if len(license) > 0:
         writable_license = check_multiple_attributes(license, license_names)
-    writable_attribution = check_multiple_attributes(attribution, attribution_names)
-    writable_restrictions = check_multiple_attributes(restrictions, restrictions_names)
-
-
-    #sort_attributes(full_attribute_list)
+        _write_metadata_file(writable_license, filename, 'license')
+    if len(attribution) > 0:
+        writable_attribution = check_multiple_attributes(attribution, attribution_names)
+        _write_metadata_file(writable_attribution, filename, 'attribution')
+    if len(restrictions) >0:
+        writable_restrictions = check_multiple_attributes(restrictions, restrictions_names)
+        _write_metadata_file(writable_restrictions, filename, 'restrictions')
+    print(writable_license)
 
 def check_multiple_attributes(attribute_list, cube_names):
     #check if multiple things in list
-    if len(attribute_list) <= 1:
+    if len(attribute_list) == 1:
         return attribute_list
     # check if attributes are the same
     if len(set(attribute_list)) == 1:
-        return attribute_list
+        return attribute_list[:1]
     #if they are not the same, add the cube name
     concatonated_attribute = []
     for attribute, name in zip(attribute_list, cube_names, strict=True):
         concatonated_attribute.append(name+' = '+attribute)
     return concatonated_attribute
 
+def _write_metadata_file(metadata, filename, attribute_name):
+    """Takes a list of metadata and writes it to a file called filename.attribute_name.
 
-
-#possibly pass in variable instead
-def sort_attributes(attribute_list):
-
-    license = []
-    attribution = []
-    restrictions = []
-    for attribute in attribute_list:
-        if 'license' in attribute:
-            license.append(attribute.pop('license'))
-        if 'attribution' in attribute:
-            attribution.append(attribute.pop('attribution'))
-        if 'license' in attribute:
-            license.append(attribute.pop('license'))
-    print("licenses: ", license)
-    #get the first attribute
+    If for any reason, the file to be written already exists, the new metadata will be
+    appended to it.
     """
-    metadata_attribute = attribute_list.pop()
-    #put the value (to be written out in a list)
-    keys_list = [metadata_attribute]
-    #if there is more than one version of the file
-    while metadata_attribute.keys() in attribute_list:
-        attribute = attribute_list.pop(metadata_attribute.keys())
-        keys_list.append(attribute.values())
-    if len(keys_list) >1:
-        check_list(keys_list)
-    print(keys_list)
-    """
+    filepath = filename+"."+attribute_name
+    with open(filepath, "a") as metadata_file:
+        metadata_file.writelines(metadata)
 
-def check_list():
-    print("the list is greater than 1")
+    warnings.warn(f"{attribute_name} has been written to sidecar file {filepath}")
