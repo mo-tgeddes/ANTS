@@ -35,7 +35,7 @@ from ants.fileformats.netcdf.cf import (
 from ants.fileformats.netcdf.ukca import LOCAL_ATTS, _ukca_conventions
 
 
-def ancil(cubes, filename):
+def ancil(cubes, filename, external_metadata=True):
     """
     Save one or more cubes to a F03 UM ancillary file.
 
@@ -73,6 +73,8 @@ def ancil(cubes, filename):
         One or more cubes to be saved.
     filename : str
         The name of the F03 UM ancillary file, including any extension.
+    external_metadata : boolean
+        Determines whether attributes should be saved to a seperate metadata file.
 
     Notes
     -----
@@ -92,6 +94,9 @@ def ancil(cubes, filename):
         raise ValueError("F03 UM ancillary files cannot be saved with a .nc extension.")
 
     cubes = ants.utils.cube.as_cubelist(cubes)
+    if external_metadata:
+        #call out to seperate saver here
+        _write_metadata(cubes)
     ancilfile = _cubes_to_ancilfile(cubes)
     _mule_set_lbuser2(ancilfile)
     ancilfile.to_file(filename)
@@ -322,3 +327,80 @@ def _update_history_cmd(cube):
         items[0] = os.path.basename(items[0])
         items.append("({})".format(metadata)) if metadata else None
         ants.utils.cube.update_history(cc, " ".join(items), date)
+
+def _write_metadata(cubes, filename):
+    """Check for metadata in the cubes and write out external files"""
+        #check what attributes are in each cube
+    #check if any of the attributes have the same name
+    #if they do check if they are the same
+    #if so write out only one
+    #if not append one to the other
+    license = []
+    license_names = []
+    attribution = []
+    attribution_names = []
+    restrictions = []
+    restrictions_names = []
+    # Get all of the approved attributes and put them into a list
+    for cube in cubes:
+        for key,value in cube.attributes.items():
+            if key == 'license':
+                license.append(value)
+                license_names.append(cube.name)
+            if key == 'attribution':
+                attribution.append(value)
+            else:
+                restrictions.append(value)
+    if len(license) > 0:
+        writable_license = check_multiple_attributes(license, license_names)
+    writable_attribution = check_multiple_attributes(attribution, attribution_names)
+    writable_restrictions = check_multiple_attributes(restrictions, restrictions_names)
+
+
+    #sort_attributes(full_attribute_list)
+
+def check_multiple_attributes(attribute_list, cube_names):
+    #check if multiple things in list
+    if len(attribute_list) <= 1:
+        return attribute_list
+    # check if attributes are the same
+    if len(set(attribute_list)) == 1:
+        return attribute_list
+    #if they are not the same, add the cube name
+    concatonated_attribute = []
+    for attribute, name in zip(attribute_list, cube_names, strict=True):
+        concatonated_attribute.append(name+' = '+attribute)
+    return concatonated_attribute
+
+
+
+#possibly pass in variable instead
+def sort_attributes(attribute_list):
+
+    license = []
+    attribution = []
+    restrictions = []
+    for attribute in attribute_list:
+        if 'license' in attribute:
+            license.append(attribute.pop('license'))
+        if 'attribution' in attribute:
+            attribution.append(attribute.pop('attribution'))
+        if 'license' in attribute:
+            license.append(attribute.pop('license'))
+    print("licenses: ", license)
+    #get the first attribute
+    """
+    metadata_attribute = attribute_list.pop()
+    #put the value (to be written out in a list)
+    keys_list = [metadata_attribute]
+    #if there is more than one version of the file
+    while metadata_attribute.keys() in attribute_list:
+        attribute = attribute_list.pop(metadata_attribute.keys())
+        keys_list.append(attribute.values())
+    if len(keys_list) >1:
+        check_list(keys_list)
+    print(keys_list)
+    """
+
+def check_list():
+    print("the list is greater than 1")
