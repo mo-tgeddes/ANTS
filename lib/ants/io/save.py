@@ -33,6 +33,7 @@ from ants.fileformats.netcdf.cf import (
     _iris_dask_chunking_workaround,
 )
 from ants.fileformats.netcdf.ukca import LOCAL_ATTS, _ukca_conventions
+import numpy as np
 
 
 def ancil(cubes, filename, external_metadata=True):
@@ -344,21 +345,22 @@ def _write_metadata(cubes, filename):
             if key == 'attribution':
                 attribution.append(value)
                 attribution_names.append(cube.name())
-            else:
+            if key == 'restrictions':
                 restrictions.append(value)
                 restrictions_names.append(cube.name())
     if len(license) > 0:
-        writable_license = check_multiple_attributes(license, license_names)
+        writable_license = _check_multiple_attributes(license, license_names)
         _write_metadata_file(writable_license, filename, 'license')
     if len(attribution) > 0:
-        writable_attribution = check_multiple_attributes(attribution, attribution_names)
+        writable_attribution = _check_multiple_attributes(attribution, attribution_names)
         _write_metadata_file(writable_attribution, filename, 'attribution')
-    if len(restrictions) >0:
-        writable_restrictions = check_multiple_attributes(restrictions, restrictions_names)
+    if len(restrictions) > 0:
+        writable_restrictions = _check_multiple_attributes(restrictions, restrictions_names)
         _write_metadata_file(writable_restrictions, filename, 'restrictions')
-    print(writable_license)
 
-def check_multiple_attributes(attribute_list, cube_names):
+def _check_multiple_attributes(attribute_list, cube_names):
+    """Checks whether the attribute can be written out exactly as is, or if it has to be
+    pre-pended with the cube name."""
     #check if multiple things in list
     if len(attribute_list) == 1:
         return attribute_list
@@ -377,7 +379,14 @@ def _write_metadata_file(metadata, filename, attribute_name):
     If for any reason, the file to be written already exists, the new metadata will be
     appended to it.
     """
-    filepath = filename+"."+attribute_name
+    filepath = str(filename)+"."+attribute_name
+    print(type(metadata))
+    print(type(metadata[0]))
+    print(metadata)
+    print(metadata)
+    #flatten list, if metadata contains list of list - possible in cases where metadata is being read in
+    if any(isinstance(element,list) for element in metadata):
+        metadata = np.concatenate(metadata).tolist()
     with open(filepath, "a") as metadata_file:
         metadata_file.writelines(metadata)
 
