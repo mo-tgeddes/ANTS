@@ -330,7 +330,16 @@ def _update_history_cmd(cube):
 
 
 def _write_metadata(cubes, filename):
-    """Check for metadata in the cubes and write out external files"""
+    """Check for metadata in the cubes and write out external files
+
+    Parameters
+    ----------
+    cubes : :class:`iris.cube.Cube` or :class:`iris.cube.CubeList`
+        One or more cubes to be saved.
+    filename : str
+        The name of the file where the data will be saved to.
+
+    """
     license = []
     license_names = []
     attribution = []
