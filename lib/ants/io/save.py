@@ -27,13 +27,13 @@ from datetime import datetime
 
 import ants.utils.cube
 import iris
+import numpy as np
 from ants.fileformats.ancil import _cubes_to_ancilfile, _mule_set_lbuser2
 from ants.fileformats.netcdf.cf import (
     _coerce_netcdf_classic_dtypes,
     _iris_dask_chunking_workaround,
 )
 from ants.fileformats.netcdf.ukca import LOCAL_ATTS, _ukca_conventions
-import numpy as np
 
 
 def ancil(cubes, filename, external_metadata=True):
@@ -74,7 +74,7 @@ def ancil(cubes, filename, external_metadata=True):
         One or more cubes to be saved.
     filename : str
         The name of the F03 UM ancillary file, including any extension.
-    external_metadata : boolean
+    external_metadata : bool
         Determines whether attributes should be saved to a seperate metadata file.
 
     Notes
@@ -96,8 +96,7 @@ def ancil(cubes, filename, external_metadata=True):
 
     cubes = ants.utils.cube.as_cubelist(cubes)
     if external_metadata:
-        #call out to seperate saver here
-        _write_metadata(cubes)
+        _write_metadata(cubes, filename)
     ancilfile = _cubes_to_ancilfile(cubes)
     _mule_set_lbuser2(ancilfile)
     ancilfile.to_file(filename)
@@ -329,6 +328,7 @@ def _update_history_cmd(cube):
         items.append("({})".format(metadata)) if metadata else None
         ants.utils.cube.update_history(cc, " ".join(items), date)
 
+
 def _write_metadata(cubes, filename):
     """Check for metadata in the cubes and write out external files"""
     license = []
@@ -338,40 +338,46 @@ def _write_metadata(cubes, filename):
     restrictions = []
     restrictions_names = []
     for cube in cubes:
-        for key,value in cube.attributes.items():
-            if key == 'license':
+        for key, value in cube.attributes.items():
+            if key == "license":
                 license.append(value)
                 license_names.append(cube.name())
-            if key == 'attribution':
+            if key == "attribution":
                 attribution.append(value)
                 attribution_names.append(cube.name())
-            if key == 'restrictions':
+            if key == "restrictions":
                 restrictions.append(value)
                 restrictions_names.append(cube.name())
     if len(license) > 0:
         writable_license = _check_multiple_attributes(license, license_names)
-        _write_metadata_file(writable_license, filename, 'license')
+        _write_metadata_file(writable_license, filename, "license")
     if len(attribution) > 0:
-        writable_attribution = _check_multiple_attributes(attribution, attribution_names)
-        _write_metadata_file(writable_attribution, filename, 'attribution')
+        writable_attribution = _check_multiple_attributes(
+            attribution, attribution_names
+        )
+        _write_metadata_file(writable_attribution, filename, "attribution")
     if len(restrictions) > 0:
-        writable_restrictions = _check_multiple_attributes(restrictions, restrictions_names)
-        _write_metadata_file(writable_restrictions, filename, 'restrictions')
+        writable_restrictions = _check_multiple_attributes(
+            restrictions, restrictions_names
+        )
+        _write_metadata_file(writable_restrictions, filename, "restrictions")
+
 
 def _check_multiple_attributes(attribute_list, cube_names):
     """Checks whether the attribute can be written out exactly as is, or if it has to be
     pre-pended with the cube name."""
-    #check if multiple things in list
+    # check if multiple things in list
     if len(attribute_list) == 1:
         return attribute_list
     # check if attributes are the same
     if len(set(attribute_list)) == 1:
         return attribute_list[:1]
-    #if they are not the same, add the cube name
+    # if they are not the same, add the cube name
     concatonated_attribute = []
     for attribute, name in zip(attribute_list, cube_names, strict=True):
-        concatonated_attribute.append(name+' = '+attribute)
+        concatonated_attribute.append(name + " = " + attribute)
     return concatonated_attribute
+
 
 def _write_metadata_file(metadata, filename, attribute_name):
     """Takes a list of metadata and writes it to a file called filename.attribute_name.
@@ -379,15 +385,12 @@ def _write_metadata_file(metadata, filename, attribute_name):
     If for any reason, the file to be written already exists, the new metadata will be
     appended to it.
     """
-    filepath = str(filename)+"."+attribute_name
-    print(type(metadata))
-    print(type(metadata[0]))
-    print(metadata)
-    print(metadata)
-    #flatten list, if metadata contains list of list - possible in cases where metadata is being read in
-    if any(isinstance(element,list) for element in metadata):
+    filepath = str(filename) + "." + attribute_name
+    # flatten list, if metadata contains list of list - possible in cases where metadata
+    #  is being read in
+    if any(isinstance(element, list) for element in metadata):
         metadata = np.concatenate(metadata).tolist()
     with open(filepath, "a") as metadata_file:
         metadata_file.writelines(metadata)
-
+    print("saved")
     warnings.warn(f"{attribute_name} has been written to sidecar file {filepath}")
