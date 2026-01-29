@@ -232,22 +232,18 @@ def load_landsea_mask(filename, land_threshold=None):
     """
     try:
         # Is it a landsea mask field?
-        lbm = ants.io.load.load_cube(
-            filename, "land_binary_mask", ignore_metadata_files=True
-        )
+        lbm = ants.io.load.load_cube(filename, "land_binary_mask")
         lbm = lbm.copy(lbm.data.astype("bool", copy=False))
     except iris.exceptions.ConstraintMismatchError:
         try:
             # Is it a land fraction field?
-            land_fraction = ants.io.load.load_cube(
-                filename, "vegetation_area_fraction", ignore_metadata_files=True
-            )
+            land_fraction = ants.io.load.load_cube(filename, "vegetation_area_fraction")
             lbm = land_fraction.copy(land_fraction.data > land_threshold)
             lbm.rename("land_binary_mask")
         except iris.exceptions.ConstraintMismatchError:
             # It looks like we are wanting to extract a landsea mask from some
             # other field.
-            cube = ants.io.load.load(filename, ignore_metadata_files=True)[0]
+            cube = ants.io.load.load(filename)[0]
             y = cube.coord(axis="y")
             x = cube.coord(axis="x")
             cube = cube.slices((y, x)).next()
@@ -360,21 +356,6 @@ def _customised_load(func):
                 "iris.FUTURE.datum_support flag.",
                 FutureWarning,
             )
-            ignore_metadata_files = False
-            if "ignore_metadata_files" in kwargs:
-                ignore_metadata_files = kwargs.pop("ignore_metadata_files")
-            if not ignore_metadata_files:
-                # Do the handling for each way a user callback can be passed in through
-                # iris
-                user_callback = None
-                if len(args) == 3:
-                    user_callback = args[2]
-                else:
-                    if "callback" in kwargs:
-                        user_callback = kwargs.pop("callback")
-                args, kwargs = _add_callback(
-                    _CallbackMetadata(user_callback), *args, **kwargs
-                )
             # Use context manager to avoid permanently modifying iris behaviour.
             with ants_format_agent():
                 cubes = func(*args, **kwargs)
@@ -454,6 +435,12 @@ class _CallbackMetadata(object):
                     category=UserWarning,
                 )
                 attribute_name = "license"
+            if attribute_name in cube.attributes:
+                raise AttributeError(
+                    f"The {attribute_name} is already an attribute on the "
+                    "cube. To ignore metadata files, use the "
+                    "--ignore-metadata-files flag."
+                )
             if attribute_name not in valid_metadata_names:
                 warnings.warn(
                     f"Attribute {attribute_name} is not a valid metadata file "
@@ -462,18 +449,10 @@ class _CallbackMetadata(object):
                     category=UserWarning,
                 )
             else:
-                if attribute_name in cube.attributes:
-                    raise AttributeError(
-                        f"The {attribute_name} is already an attribute on the "
-                        "cube. To ignore metadata files, use the "
-                        "--ignore-metadata-files flag."
-                    )
                 open_file = open(metadata_file, "r")
                 metadata = open_file.readlines()
                 open_file.close()
                 cube.attributes[attribute_name] = metadata
-                with open("written_license.txt", "a") as file:
-                    file.write("".join(metadata))
 
 
 def load_cube(*args, **kwargs):
