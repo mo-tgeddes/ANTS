@@ -8,7 +8,6 @@ class directly.
 """
 
 import unittest.mock as mock
-import warnings
 
 import ants.io.load
 import iris
