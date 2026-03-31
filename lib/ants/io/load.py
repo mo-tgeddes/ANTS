@@ -398,7 +398,7 @@ class _CallbackMetadata(object):
 
     def __call__(self, cube, field, filename):
         """
-        The method that runs when iris runs the callback. Collects the filenames and
+        The method that runs when Iris runs the callback. Collects the filenames and
         will run the user callback
         """
         if type(filename) is list:
