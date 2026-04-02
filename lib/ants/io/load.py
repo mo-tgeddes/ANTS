@@ -375,6 +375,12 @@ def _add_callback(callback, *args, **kwargs):
     """
     Adds both the ants callback and the user provided callback (if any) to the
     load.
+
+    Parameters
+        ----------
+        callback: :class:`_CallbackMetadata`
+            An object that will contain the ants call back and an attribute
+            with the user callback if applicable.
     """
     args = list(args)
     if len(args) == 1:
