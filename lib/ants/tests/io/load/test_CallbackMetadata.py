@@ -88,7 +88,7 @@ def test_attribute_already_on_cube():
 
 
 @pytest.mark.filterwarnings(
-    "ignore:The attribute name lisense has been changed to license, in line with ANTS "
+    "ignore:The attribute name lisense has been changed to 'license', in line with ANTS "
     "working practices.:UserWarning"
 )
 def test_missplet_license_with_licensed_cube():

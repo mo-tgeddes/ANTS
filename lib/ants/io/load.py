@@ -437,7 +437,7 @@ class _CallbackMetadata(object):
             if attribute_name in other_license:
                 warnings.warn(
                     f"The attribute name {attribute_name} has been changed to "
-                    "license, in line with ANTS working practices.",
+                    "'license', in line with ANTS working practices.",
                     category=UserWarning,
                 )
                 attribute_name = "license"
