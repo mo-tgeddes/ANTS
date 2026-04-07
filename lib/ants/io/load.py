@@ -430,11 +430,11 @@ class _CallbackMetadata(object):
 
         """
         valid_metadata_names = ["license", "attribution", "restrictions"]
-        other_license = ["lisense", "licence", "lisence"]
+        other_license = "licence"
         for metadata_file in metadata_files:
             file_name_splits = str(metadata_file).split(".")
             attribute_name = file_name_splits[-1]
-            if attribute_name in other_license:
+            if attribute_name == other_license:
                 warnings.warn(
                     f"The attribute name {attribute_name} has been changed to "
                     "'license', in line with ANTS working practices.",

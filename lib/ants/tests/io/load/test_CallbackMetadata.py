@@ -88,7 +88,7 @@ def test_attribute_already_on_cube():
 
 
 @pytest.mark.filterwarnings(
-    "ignore:The attribute name lisense has been changed to 'license', in line with ANTS "
+    "ignore:The attribute name licence has been changed to 'license', in line with ANTS "
     "working practices.:UserWarning"
 )
 def test_missplet_license_with_licensed_cube():
@@ -97,7 +97,7 @@ def test_missplet_license_with_licensed_cube():
     class_instance = ants.io.load._CallbackMetadata(None)
     test_cube = ants.tests.stock.geodetic(shape=(2, 2))
     test_cube.attributes["license"] = "This is a license. "
-    path = ["fake-path/fake-cube.lisense"]
+    path = ["fake-path/fake-cube.licence"]
     expected_message = (
         "The license is already an attribute on the "
         "cube. To ignore metadata files, use the "
