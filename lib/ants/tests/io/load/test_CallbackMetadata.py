@@ -8,11 +8,53 @@ class directly.
 """
 
 import unittest.mock as mock
+import warnings
 
 import ants.io.load
 import iris
 import pytest
 
+
+def test_metadata_files_added_to_attributes(tmp_path):
+    """Tests that metadata files are found and added to the cube's attributes."""
+    # The text that would be in a license file
+    license_text = """This is the license of the cube.
+
+    It should be preserved and added to the cube when loaded.
+    """
+    # How the text should look while stored in an array
+    loaded_license = [
+        "This is the license of the cube.\n",
+        "\n",
+        "    It should be preserved and added to the cube when loaded.\n",
+        "    ",
+    ]
+    test_cube = ants.tests.stock.geodetic(shape=(2, 2))
+    temporary_cube_path = tmp_path / "cube_attribute.pp"
+    iris.save(test_cube, str(temporary_cube_path))
+    temporary_license_path = tmp_path / "cube_attribute.pp.license"
+    temporary_license_path.write_text(license_text, encoding="utf-8")
+    loaded_test_cube = ants.io.load.load_cube(temporary_cube_path)
+    assert loaded_test_cube.attributes["license"] == loaded_license
+
+
+def test_no_metadata_loaded(tmp_path):
+    """Tests that metadata files are not loaded when the option is turned off."""
+    # The text that would be in a license file
+    license_text = """This is the license of the cube.
+
+    It should be preserved and added to the cube when loaded.
+    """
+    test_cube = ants.tests.stock.geodetic(shape=(2, 2))
+    temporary_cube_path = tmp_path / "cube_attribute.pp"
+    iris.save(test_cube, str(temporary_cube_path))
+    temporary_license_path = tmp_path / "cube_attribute.pp.license"
+    temporary_license_path.write_text(license_text, encoding="utf-8")
+    loaded_test_cube = ants.io.load.load_cube(
+        temporary_cube_path, ignore_metadata_files=True
+    )
+    with pytest.raises(KeyError):
+        loaded_test_cube.attributes["license"]
 
 def test_user_callback_added():
     """Test that on ititialisation, the user's function will be set."""
@@ -105,3 +147,36 @@ def test_missplet_license_with_licensed_cube():
     )
     with pytest.raises(AttributeError, match=expected_message):
         class_instance._retrieve_metadata(path, test_cube)
+
+def test_misspelt_license_added(tmp_path):
+    """Tests that a different spelling of license will add a license attribute."""
+    license_text = "a license"
+    test_cube = ants.tests.stock.geodetic(shape=(2, 2))
+    temporary_cube_path = tmp_path / "cube_attribute.nc"
+    iris.save(test_cube, str(temporary_cube_path))
+    temporary_license_path = tmp_path / "cube_attribute.nc.licence"
+    temporary_license_path.write_text(license_text, encoding="utf-8")
+    # ignore warning that will be raised
+    warning_message = (
+        "The attribute name licence has been changed to 'license', in "
+        "line with ANTS working practices."
+    )
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", message=warning_message, category=UserWarning)
+        loaded_cube = ants.io.load.load_cube(temporary_cube_path)
+        assert loaded_cube.attributes["license"] == ["a license"]
+
+def test_invalid_metadata_name(tmp_path):
+    """Tests that an invalid metadata name will not be added as an attribute."""
+    test_cube = ants.tests.stock.geodetic(shape=(2, 2))
+    temporary_cube_path = tmp_path / "cube_attribute.nc"
+    iris.save(test_cube, str(temporary_cube_path))
+    temporary_license_path = tmp_path / "cube_attribute.nc.invalid-name"
+    temporary_license_path.write_text(" ", encoding="utf-8")
+
+    warning_message = (
+        "Attribute invalid-name is not a valid metadata file name. "
+        "Accepted metadata names are license, attribution and restrictions."
+    )
+    with pytest.raises(UserWarning, match=warning_message):
+        ants.io.load.load_cube(temporary_cube_path)

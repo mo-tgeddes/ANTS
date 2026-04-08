@@ -232,18 +232,18 @@ def load_landsea_mask(filename, land_threshold=None):
     """
     try:
         # Is it a landsea mask field?
-        lbm = ants.io.load.load_cube(filename, "land_binary_mask")
+        lbm = ants.io.load.load_cube(filename, "land_binary_mask", ignore_metadata_files=True)
         lbm = lbm.copy(lbm.data.astype("bool", copy=False))
     except iris.exceptions.ConstraintMismatchError:
         try:
             # Is it a land fraction field?
-            land_fraction = ants.io.load.load_cube(filename, "vegetation_area_fraction")
+            land_fraction = ants.io.load.load_cube(filename, "vegetation_area_fraction", ignore_metadata_files=True)
             lbm = land_fraction.copy(land_fraction.data > land_threshold)
             lbm.rename("land_binary_mask")
         except iris.exceptions.ConstraintMismatchError:
             # It looks like we are wanting to extract a landsea mask from some
             # other field.
-            cube = ants.io.load.load(filename)[0]
+            cube = ants.io.load.load(filename, ignore_metadata_files=True)[0]
             y = cube.coord(axis="y")
             x = cube.coord(axis="x")
             cube = cube.slices((y, x)).next()
@@ -356,6 +356,21 @@ def _customised_load(func):
                 "iris.FUTURE.datum_support flag.",
                 FutureWarning,
             )
+            ignore_metadata_files = False
+            if "ignore_metadata_files" in kwargs:
+                ignore_metadata_files = kwargs.pop("ignore_metadata_files")
+            if not ignore_metadata_files:
+                # Do the handling for each way a user callback can be passed in through
+                # iris
+                user_callback = None
+                if len(args) == 3:
+                    user_callback = args[2]
+                else:
+                    if "callback" in kwargs:
+                        user_callback = kwargs.pop("callback")
+                args, kwargs = _add_callback(
+                    _CallbackMetadata(user_callback), *args, **kwargs
+                )
             # Use context manager to avoid permanently modifying iris behaviour.
             with ants_format_agent():
                 cubes = func(*args, **kwargs)
