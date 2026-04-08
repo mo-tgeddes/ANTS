@@ -414,8 +414,8 @@ class _CallbackMetadata(object):
     """Callback for collecting metadata from sidecar files.
 
     This callback will load additional metadata files with the naming convention:
-    filename.[license,attribution,restrictions] and append the contents of those files to the cube
-    attributes.
+    filename.[license,attribution,restrictions] and append the contents of those files
+    to the cube attributes.
     """
 
     def __init__(self, user_callback):
