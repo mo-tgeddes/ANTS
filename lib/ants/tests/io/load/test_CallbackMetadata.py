@@ -56,6 +56,7 @@ def test_no_metadata_loaded(tmp_path):
     with pytest.raises(KeyError):
         loaded_test_cube.attributes["license"]
 
+
 def test_user_callback_added():
     """Test that on ititialisation, the user's function will be set."""
 
@@ -148,6 +149,7 @@ def test_missplet_license_with_licensed_cube():
     with pytest.raises(AttributeError, match=expected_message):
         class_instance._retrieve_metadata(path, test_cube)
 
+
 def test_misspelt_license_added(tmp_path):
     """Tests that a different spelling of license will add a license attribute."""
     license_text = "a license"
@@ -165,6 +167,7 @@ def test_misspelt_license_added(tmp_path):
         warnings.filterwarnings("ignore", message=warning_message, category=UserWarning)
         loaded_cube = ants.io.load.load_cube(temporary_cube_path)
         assert loaded_cube.attributes["license"] == ["a license"]
+
 
 def test_invalid_metadata_name(tmp_path):
     """Tests that an invalid metadata name will not be added as an attribute."""
