@@ -25,6 +25,7 @@ def load_data(
     land_fraction_threshold=None,
     begin=None,
     end=None,
+    ignore_metadata_files=None,
 ):
     """
     Load the necessary data for performing a merge and fill operation.
@@ -45,6 +46,9 @@ def load_data(
         Datetime to start the processing.
     end: :obj:`datetime`, optional
         Datetime to end the processing.
+    ignore_metadata_files : :obj:`bool`, optional
+        When set to True, files containing metadata will not be loaded alongside data
+        and added as attributes to the cube.
 
 
     Returns
@@ -56,12 +60,16 @@ def load_data(
         respectively.
 
     """
-    primary_cubes = ants.io.load.load(primary_source)
+    primary_cubes = ants.io.load.load(
+        primary_source, ignore_metadata_files=ignore_metadata_files
+        )
     if begin is not None:
         primary_cubes = create_time_constrained_cubes(primary_cubes, begin, end)
     alternate_cubes = None
     if alternate_source:
-        alternate_cubes = ants.io.load.load(alternate_source)
+        alternate_cubes = ants.io.load.load(
+            alternate_source, ignore_metadata_files=ignore_metadata_files
+            )
         if begin is not None:
             alternate_cubes = create_time_constrained_cubes(alternate_cubes, begin, end)
 
@@ -96,6 +104,7 @@ def main(
     end,
     netcdf_only,
     search_method,
+    ignore_metadata_files,
 ):
     """
     Perform merge and fill operation on the provided sources.
@@ -141,6 +150,10 @@ def main(
     search_method : :obj:`str`
         Select the search method to be used when filling missing points. The methods
         currently supported are "spiral" and "kdtree".
+    ignore_metadata_files : :obj:`bool`, optional
+        When set to True, files containing metadata will not be loaded alongside data
+        and added as attributes to the cube.
+
     Returns
     -------
     : :class:`~iris.cube.CubeList`
@@ -159,6 +172,7 @@ def main(
         land_fraction_threshold,
         begin,
         end,
+        ignore_metadata_files
     )
 
     result = primary_cubes
@@ -251,6 +265,7 @@ def cli_interface():
         end=args.end,
         netcdf_only=args.netcdf_only,
         search_method=args.search_method,
+        ignore_metadata_files=args.ignore_metadata_files,
     )
 
 
