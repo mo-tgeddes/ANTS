@@ -62,14 +62,14 @@ def load_data(
     """
     primary_cubes = ants.io.load.load(
         primary_source, ignore_metadata_files=ignore_metadata_files
-        )
+    )
     if begin is not None:
         primary_cubes = create_time_constrained_cubes(primary_cubes, begin, end)
     alternate_cubes = None
     if alternate_source:
         alternate_cubes = ants.io.load.load(
             alternate_source, ignore_metadata_files=ignore_metadata_files
-            )
+        )
         if begin is not None:
             alternate_cubes = create_time_constrained_cubes(alternate_cubes, begin, end)
 
@@ -172,7 +172,7 @@ def main(
         land_fraction_threshold,
         begin,
         end,
-        ignore_metadata_files
+        ignore_metadata_files,
     )
 
     result = primary_cubes

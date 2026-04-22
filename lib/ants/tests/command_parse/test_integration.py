@@ -299,4 +299,3 @@ class TestAntsArgParser(ants.tests.TestCase):
         )
         self.assertFalse(self.mock_config.called)
         self.assertEqual(args, target_args)
-
