@@ -2,7 +2,7 @@
 {% set ANTS_MODULE = "ants/developer" %}
 {% set PYTHONPATH_PREPEND = "$CYLC_WORKFLOW_RUN_DIR/share/fcm_make_ants/build/lib" %}
 
-{% set fill_n_merge_source = ['land_cover', 'invert_mask', 'metadata_file'] %}
+{% set fill_n_merge_source = ['land_cover', 'invert_mask'] %}
 {% set grid_source = ['grid_to_grid', 'grid_to_variable_resolution_grid', 'grid_to_n48e_namelist', 'grid_to_n48_namelist', '3d_to_3d', '3d_to_3d_with_extrapolation', 'invert_mask'] %}
 {% set target_lsm_grid_sources = ['grid_to_grid', 'invert_mask'] %}
 
@@ -14,7 +14,6 @@
     "install_graph" : "install_cold",
     "ancil_2anc_graph" : "install_cold => ancil_2anc<split> => rose_ana_2anc:fail? => plot_comparisons_2anc",
     "fill_n_merge_land_cover_graph" : "install_cold => ancil_create_ite_shapefile => ancil_fill_n_merge_land_cover<fill> & ancil_fill_n_merge_land_cover_latitude_weighted_kdtree => rose_ana_fill_n_merge:fail? => plot_comparisons_fill_n_merge",
-    "load_metadata_graph" : "install_cold => ancil_fill_n_merge_metadata_file => rose_ana_fill_n_merge",
     "load_metadata_regrid_graph" : "install_cold => ancil_general_regrid_metadata => rose_ana_general_regrid",
     "fill_n_merge_invert_mask_graph" : "install_cold => ancil_fill_n_merge_invert_mask<fill> & ancil_fill_n_merge_invert_mask_latitude_weighted_kdtree => rose_ana_fill_n_merge:fail? => plot_comparisons_fill_n_merge",
     "general_regrid_grid_to_grid_graph" : "install_cold => ancil_general_regrid_grid_to_grid<fill,split> => rose_ana_general_regrid<fill>:fail? => plot_comparisons_general_regrid<fill>
@@ -199,10 +198,6 @@ fi
     [[ancil_fill_n_merge_{{ source }}_latitude_weighted_kdtree]]
         inherit = ANCIL_FILL_N_MERGE_{{ source }}
         script = rose task-run --app-key=ancil_fill_n_merge -O {{ source }} -O latitude-weighted-kdtree
-
-    [[ancil_fill_n_merge_metadata_file]]
-        inherit = ANCIL_FILL_N_MERGE_{{ source }}
-        script = rose task-run --app-key=ancil_fill_n_merge -O {{ source }}
     {% endfor %}
 
 
@@ -217,7 +212,6 @@ fi
         [[[environment]]]
             ROSE_TASK_APP = rose_ana
             ROSE_APP_OPT_CONF_KEYS = fill_n_merge
-            ANTS_KGO_DIRECTORY_OVERRIDE = /home/users/theo.geddes/cylc-run/dev-ants-core/run78/share/data
 
     [[ANCIL_2ANC]]
         inherit=ANTS_CORE, LARGE
