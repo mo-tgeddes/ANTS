@@ -14,6 +14,17 @@ def test_one_element_in_list():
     assert expected == actual
 
 
+def test_only_one_Cube_in_list():
+    """Tests that when given only one cube name, the attributes are returned."""
+    expected = [
+        "This is an attribution for some of the data. ",
+        "This is a different attribution for the rest of the data.",
+    ]
+    cube_name = ["a cube with multiple attributions"]
+    actual = _check_multiple_attributes(expected, cube_name)
+    assert expected == actual
+
+
 def test_all_elements_in_list_same():
     """Tests that when all elements in list are the same, one is returned."""
     expected = ["This is the only attribution given. "]
