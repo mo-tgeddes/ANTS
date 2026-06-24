@@ -334,7 +334,7 @@ def _check_multiple_attributes(attribute_list, cube_names):
     if len(set(attribute_list)) == 1:
         return attribute_list[:1]
     # if they are not the same, add the cube name
-    concatonated_attribute = []
+    concatenated_attribute = []
     for attribute, name in zip(attribute_list, cube_names, strict=True):
         concatonated_attribute.append(name + " = " + attribute)
     return concatonated_attribute
