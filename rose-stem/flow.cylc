@@ -200,8 +200,6 @@ fi
         script = rose task-run --app-key=ancil_fill_n_merge -O {{ source }} -O latitude-weighted-kdtree
     {% endfor %}
 
-
-
     [[ancil_create_ite_shapefile]]
         inherit = ANTS_CORE, SMALL
         [[[environment]]]
