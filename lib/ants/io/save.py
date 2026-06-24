@@ -322,3 +322,22 @@ def _update_history_cmd(cube):
         items[0] = os.path.basename(items[0])
         items.append("({})".format(metadata)) if metadata else None
         ants.utils.cube.update_history(cc, " ".join(items), date)
+
+
+def _check_multiple_attributes(attribute_list, cube_names):
+    """Checks whether the attribute can be written out exactly as is, or if it has to be
+    pre-pended with the cube name."""
+    # check if multiple things in list
+    if len(attribute_list) == 1:
+        return attribute_list
+    # check if attributes are the same
+    if len(set(attribute_list)) == 1:
+        return attribute_list[:1]
+    # check if there is only one cube
+    if len(cube_names) == 1:
+        return attribute_list
+    # if they are not the same, add the cube name
+    concatenated_attribute = []
+    for attribute, name in zip(attribute_list, cube_names, strict=True):
+        concatenated_attribute.append(name + " = " + attribute)
+    return concatenated_attribute
