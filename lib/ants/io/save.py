@@ -330,13 +330,13 @@ def _update_history_cmd(cube):
         ants.utils.cube.update_history(cc, " ".join(items), date)
 
 
-def _write_metadata(cubes, filename):
+def _write_metadata(cubes, data_filepath):
     """Check for metadata in the cubes and write out external files
     Parameters
     ----------
     cubes : :class:`iris.cube.Cube` or :class:`iris.cube.CubeList`
         One or more cubes to be saved.
-    filename : str
+    data_filepath : str
         The name of the file where the data will be saved to.
     """
     license = []
@@ -358,17 +358,17 @@ def _write_metadata(cubes, filename):
                 restrictions_names.append(cube.name())
     if len(license) > 0:
         writable_license = _check_multiple_attributes(license, license_names)
-        _write_metadata_file(writable_license, filename, "license")
+        _write_metadata_file(writable_license, data_filepath, "license")
     if len(attribution) > 0:
         writable_attribution = _check_multiple_attributes(
             attribution, attribution_names
         )
-        _write_metadata_file(writable_attribution, filename, "attribution")
+        _write_metadata_file(writable_attribution, data_filepath, "attribution")
     if len(restrictions) > 0:
         writable_restrictions = _check_multiple_attributes(
             restrictions, restrictions_names
         )
-        _write_metadata_file(writable_restrictions, filename, "restrictions")
+        _write_metadata_file(writable_restrictions, data_filepath, "restrictions")
 
 
 def _check_multiple_attributes(attribute_list, cube_names):
