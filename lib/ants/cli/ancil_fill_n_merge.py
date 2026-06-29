@@ -182,7 +182,7 @@ def main(
         ants.analysis.make_consistent_with_lsm(result, lbm, invert_mask, search_method)
 
     if not netcdf_only:
-        save.ancil(result, output)
+        save.ancil(result, output, ignore_external_metadata=ignore_metadata_files)
     save.netcdf(result, output)
 
     return result

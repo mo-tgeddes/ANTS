@@ -27,6 +27,7 @@ from datetime import datetime
 
 import ants.utils.cube
 import iris
+import numpy as np
 from ants.fileformats.ancil import _cubes_to_ancilfile, _mule_set_lbuser2
 from ants.fileformats.netcdf.cf import (
     _coerce_netcdf_classic_dtypes,
@@ -35,7 +36,7 @@ from ants.fileformats.netcdf.cf import (
 from ants.fileformats.netcdf.ukca import LOCAL_ATTS, _ukca_conventions
 
 
-def ancil(cubes, filename):
+def ancil(cubes, filename, ignore_external_metadata=False):
     """
     Save one or more cubes to a F03 UM ancillary file.
 
@@ -73,6 +74,9 @@ def ancil(cubes, filename):
         One or more cubes to be saved.
     filename : str
         The name of the F03 UM ancillary file, including any extension.
+    ignore_external_metadata : bool
+        Determines whether attributes should be saved to a seperate metadata file.
+        Default behavior is false, so will write out the metadata.
 
     Notes
     -----
@@ -92,6 +96,8 @@ def ancil(cubes, filename):
         raise ValueError("F03 UM ancillary files cannot be saved with a .nc extension.")
 
     cubes = ants.utils.cube.as_cubelist(cubes)
+    if not ignore_external_metadata:
+        _write_metadata(cubes, filename)
     ancilfile = _cubes_to_ancilfile(cubes)
     _mule_set_lbuser2(ancilfile)
     ancilfile.to_file(filename)
@@ -324,6 +330,47 @@ def _update_history_cmd(cube):
         ants.utils.cube.update_history(cc, " ".join(items), date)
 
 
+def _write_metadata(cubes, filename):
+    """Check for metadata in the cubes and write out external files
+    Parameters
+    ----------
+    cubes : :class:`iris.cube.Cube` or :class:`iris.cube.CubeList`
+        One or more cubes to be saved.
+    filename : str
+        The name of the file where the data will be saved to.
+    """
+    license = []
+    license_names = []
+    attribution = []
+    attribution_names = []
+    restrictions = []
+    restrictions_names = []
+    for cube in cubes:
+        for key, value in cube.attributes.items():
+            if key == "license":
+                license.append(value)
+                license_names.append(cube.name())
+            if key == "attribution":
+                attribution.append(value)
+                attribution_names.append(cube.name())
+            if key == "restrictions":
+                restrictions.append(value)
+                restrictions_names.append(cube.name())
+    if len(license) > 0:
+        writable_license = _check_multiple_attributes(license, license_names)
+        _write_metadata_file(writable_license, filename, "license")
+    if len(attribution) > 0:
+        writable_attribution = _check_multiple_attributes(
+            attribution, attribution_names
+        )
+        _write_metadata_file(writable_attribution, filename, "attribution")
+    if len(restrictions) > 0:
+        writable_restrictions = _check_multiple_attributes(
+            restrictions, restrictions_names
+        )
+        _write_metadata_file(writable_restrictions, filename, "restrictions")
+
+
 def _check_multiple_attributes(attribute_list, cube_names):
     """Checks whether the attribute can be written out exactly as is, or if it has to be
     pre-pended with the cube name."""
@@ -341,3 +388,19 @@ def _check_multiple_attributes(attribute_list, cube_names):
     for attribute, name in zip(attribute_list, cube_names, strict=True):
         concatenated_attribute.append(name + " = " + attribute)
     return concatenated_attribute
+
+
+def _write_metadata_file(metadata, filename, attribute_name):
+    """Takes a list of metadata and writes it to a file called filename.attribute_name.
+    If for any reason, the file to be written already exists, the new metadata will be
+    appended to it.
+    """
+    filepath = str(filename) + "." + attribute_name
+    # flatten list, if metadata contains list of list - possible in cases where metadata
+    #  is being read in
+    if any(isinstance(element, list) for element in metadata):
+        metadata = np.concatenate(metadata).tolist()
+    with open(filepath, "a") as metadata_file:
+        metadata_file.writelines(metadata)
+    print("saved")
+    warnings.warn(f"{attribute_name} has been written to sidecar file {filepath}")

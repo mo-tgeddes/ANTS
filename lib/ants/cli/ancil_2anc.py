@@ -72,7 +72,9 @@ def main(source_path, output_path, grid_staggering, netcdf_only, ignore_metadata
             source_cube.attributes["grid_staggering"] = grid_staggering
 
     if not netcdf_only:
-        save.ancil(source_cubes, output_path)
+        save.ancil(
+            source_cubes, output_path, ignore_external_metadata=ignore_metadata_files
+        )
     save.netcdf(source_cubes, output_path)
 
     return source_cubes
