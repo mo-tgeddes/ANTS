@@ -264,7 +264,7 @@ fi
         [[[environment]]]
             ROSE_TASK_APP = rose_ana
             ROSE_APP_OPT_CONF_KEYS = general_regrid
-            ANTS_KGO_DIRECTORY_OVERRIDE=/home/users/theo.geddes/cylc-run/dev-ants-core/run95/share/data/
+            ANTS_KGO_DIRECTORY_OVERRIDE=/home/users/theo.geddes/cylc-run/dev-ants-core/run98/share/data/
 
     [[rose_ana_general_regrid<fill>]]
         inherit = ROSE_ANA
