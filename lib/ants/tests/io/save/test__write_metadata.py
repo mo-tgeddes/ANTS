@@ -53,7 +53,7 @@ def test_loaded_license_written(tmp_path):
 def test_warning_given():
     """Tests that a warning is given when file is written out."""
     cube = stock.geodetic(shape=(2, 2))
-    attribution = "This date came from an institution. "
+    attribution = "This data came from an institution. "
     cube.attributes["attribution"] = attribution
     expected_message = (
         "attribution has been written to sidecar file filename.attribution"
@@ -110,7 +110,7 @@ def test_all_different_attributes_written_out(tmp_path):
     """Tests that a cube with a multiple different attributes writes
     out all metadata files."""
     cube = stock.geodetic(shape=(2, 2))
-    attribution = "This date came from an institution. "
+    attribution = "This data came from an institution. "
     cube.attributes["attribution"] = attribution
     cube.attributes["restrictions"] = (
         "This data is restricted to be used for testing purposes only."

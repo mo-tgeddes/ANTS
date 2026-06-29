@@ -76,7 +76,7 @@ def ancil(cubes, filename, ignore_external_metadata=False):
         The name of the F03 UM ancillary file, including any extension.
     ignore_external_metadata : bool
         Determines whether attributes should be saved to a seperate metadata file.
-        Default behavior is false, so will write out the metadata.
+        Default setting is False, so will write out the metadata.
 
     Notes
     -----
@@ -397,7 +397,7 @@ def _write_metadata_file(metadata, filename, attribute_name):
     """
     filepath = str(filename) + "." + attribute_name
     # flatten list, if metadata contains list of list - possible in cases where metadata
-    #  is being read in
+    # is being read in
     if any(isinstance(element, list) for element in metadata):
         metadata = np.concatenate(metadata).tolist()
     with open(filepath, "a") as metadata_file:
