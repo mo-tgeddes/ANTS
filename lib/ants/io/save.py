@@ -402,5 +402,4 @@ def _write_metadata_file(metadata, filename, attribute_name):
         metadata = np.concatenate(metadata).tolist()
     with open(filepath, "a") as metadata_file:
         metadata_file.writelines(metadata)
-    print("saved")
     warnings.warn(f"{attribute_name} has been written to sidecar file {filepath}")
