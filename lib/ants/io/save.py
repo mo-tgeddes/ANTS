@@ -97,7 +97,7 @@ def ancil(cubes, filename, ignore_writing_metadata_files=False):
 
     cubes = ants.utils.cube.as_cubelist(cubes)
     if not ignore_writing_metadata_files:
-        _write_metadata(cubes, filename)
+        _check_and_sort_metadata_attributes(cubes, filename)
     ancilfile = _cubes_to_ancilfile(cubes)
     _mule_set_lbuser2(ancilfile)
     ancilfile.to_file(filename)
@@ -330,8 +330,9 @@ def _update_history_cmd(cube):
         ants.utils.cube.update_history(cc, " ".join(items), date)
 
 
-def _write_metadata(cubes, data_filepath):
-    """Check for metadata in the cubes and write out external files
+def _check_and_sort_metadata_attributes(cubes, data_filepath):
+    """Checks for a license, attribution or restrictions in the metadata of the cubes,
+    and calls `_write_metadata_file` for each attribute.
     Parameters
     ----------
     cubes : :class:`iris.cube.Cube` or :class:`iris.cube.CubeList`
