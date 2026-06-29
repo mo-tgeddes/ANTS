@@ -392,7 +392,8 @@ def _check_multiple_attributes(attribute_list, cube_names):
 
 
 def _write_metadata_file(metadata, filename, attribute_name):
-    """Takes a list of metadata and writes it to a file called filename.attribute_name.
+    """Takes a list of metadata and writes it to a file called
+    filename.<attribute_name>.
     If for any reason, the file to be written already exists, the new metadata will be
     appended to it.
     """
