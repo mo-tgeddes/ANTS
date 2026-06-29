@@ -73,7 +73,9 @@ def main(source_path, output_path, grid_staggering, netcdf_only, ignore_metadata
 
     if not netcdf_only:
         save.ancil(
-            source_cubes, output_path, ignore_external_metadata=ignore_metadata_files
+            source_cubes,
+            output_path,
+            ignore_writing_metadata_files=ignore_metadata_files,
         )
     save.netcdf(source_cubes, output_path)
 
