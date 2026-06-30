@@ -91,9 +91,9 @@ def test_multiple_cubes(tmp_path):
     with open(expected_filename, "r") as file:
         actual_license = file.read()
     expected_license = (
-        "the first cube = This is a cube's license. the second cube = "
-        "This is another cube's license. the third cube = This is a third cube's "
-        "license. "
+        "the first cube = This is a cube's license. \nthe second cube = "
+        "This is another cube's license. \nthe third cube = This is a third cube's "
+        "license. \n"
     )
     assert actual_license == expected_license
 

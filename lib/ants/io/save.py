@@ -381,7 +381,8 @@ def _check_multiple_attributes(attribute_list, cube_names):
     # if they are not the same, add the cube name
     concatenated_attribute = []
     for attribute, name in zip(attribute_list, cube_names, strict=True):
-        concatenated_attribute.append(name + " = " + attribute)
+        concatenated_attribute.append(name + " = " + attribute + "\n")
+    print("concatenated_attribute", concatenated_attribute)
     return concatenated_attribute
 
 
