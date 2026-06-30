@@ -6,13 +6,9 @@ import logging
 from unittest import mock
 
 import ants.tests.stock as stock
-import pytest
 from ants.io.save import _check_and_sort_metadata_attributes
 
 
-@pytest.mark.filterwarnings(
-    "ignore:license has been written to sidecar file /var/tmp/:UserWarning"
-)
 def test_license_attribute_written(tmp_path):
     """Tests that a cube with a license is written out."""
     cube = stock.geodetic(shape=(2, 2))
@@ -27,9 +23,6 @@ def test_license_attribute_written(tmp_path):
     assert actual_license == license
 
 
-@pytest.mark.filterwarnings(
-    "ignore:license has been written to sidecar file /var/tmp/:UserWarning"
-)
 def test_loaded_license_written(tmp_path):
     """Tests that a cube with a license that resembles the format of a longer license
     written in, is written out correctly."""
@@ -65,9 +58,6 @@ def test_log_output(caplog):
     assert expected_message in caplog.text
 
 
-@pytest.mark.filterwarnings(
-    "ignore:license has been written to sidecar file /var/tmp/:UserWarning"
-)
 def test_multiple_cubes(tmp_path):
     """Test that multiple_cubes with attributes is written out correctly."""
     # creating three cubes with different license attributes
