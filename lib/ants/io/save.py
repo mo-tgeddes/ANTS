@@ -341,36 +341,29 @@ def _check_and_sort_metadata_attributes(cubes, data_filepath):
     data_filepath : str
         The name of the file where the data will be saved to.
     """
-    license = []
-    license_names = []
-    attribution = []
-    attribution_names = []
-    restrictions = []
-    restrictions_names = []
+    # a dictionary to contain all of the metadata to be saved
+    metadata_dictionary = {}
+    # a dictionary to keep track of which cubes have metadata
+    cube_names_dictionary = {}
+    # a list of approved attributes that can be saved
+    attributes_to_save = ["license", "attribution", "restrictions"]
     for cube in cubes:
         for key, value in cube.attributes.items():
-            if key == "license":
-                license.append(value)
-                license_names.append(cube.name())
-            if key == "attribution":
-                attribution.append(value)
-                attribution_names.append(cube.name())
-            if key == "restrictions":
-                restrictions.append(value)
-                restrictions_names.append(cube.name())
-    if len(license) > 0:
-        writable_license = _check_multiple_attributes(license, license_names)
-        _write_metadata_file(writable_license, data_filepath, "license")
-    if len(attribution) > 0:
-        writable_attribution = _check_multiple_attributes(
-            attribution, attribution_names
+            # check the attribute is one we want to save
+            if key in attributes_to_save:
+                if key in metadata_dictionary:
+                    metadata_dictionary[key].append(value)
+                    cube_names_dictionary[key + "_names"].append(cube.name())
+                else:
+                    metadata_dictionary[key] = [value]
+                    cube_names_dictionary[key + "_names"] = [cube.name()]
+    for key, value in metadata_dictionary.items():
+        # sort the metadata ready to save
+        metadata_dictionary[key] = _check_multiple_attributes(
+            metadata_dictionary[key], cube_names_dictionary[key + "_names"]
         )
-        _write_metadata_file(writable_attribution, data_filepath, "attribution")
-    if len(restrictions) > 0:
-        writable_restrictions = _check_multiple_attributes(
-            restrictions, restrictions_names
-        )
-        _write_metadata_file(writable_restrictions, data_filepath, "restrictions")
+        # write the metadata
+        _write_metadata_file(metadata_dictionary[key], data_filepath, key)
 
 
 def _check_multiple_attributes(attribute_list, cube_names):
