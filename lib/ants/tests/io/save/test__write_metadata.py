@@ -2,6 +2,7 @@
 #
 # This file is part of ANTS and is released under the BSD 3-Clause license.
 # See LICENSE.txt in the root of the repository for full licensing details.
+import logging
 from unittest import mock
 
 import ants.tests.stock as stock
@@ -49,8 +50,8 @@ def test_loaded_license_written(tmp_path):
     assert actual_license == loaded_license
 
 
-def test_warning_given():
-    """Tests that a warning is given when file is written out."""
+def test_log_output(caplog):
+    """Tests that the logger gives the correct output when a file is written out."""
     cube = stock.geodetic(shape=(2, 2))
     attribution = "This data came from an institution. "
     cube.attributes["attribution"] = attribution
@@ -59,8 +60,9 @@ def test_warning_given():
     )
     # mocks out the opening of files, so no file is created
     with mock.patch("builtins.open"):
-        with pytest.raises(UserWarning, match=expected_message):
+        with caplog.at_level(logging.INFO):
             _check_and_sort_metadata_attributes([cube], "filename")
+    assert expected_message in caplog.text
 
 
 @pytest.mark.filterwarnings(

@@ -20,6 +20,7 @@ Additionally, ANTS has support for 'ukca' flavoured NetCDF, chosen by
 specifying ``saver='ukca'`` (see :func:`ants.io.save.ukca_netcdf`).
 
 """
+import logging
 import os
 import sys
 import warnings
@@ -404,4 +405,5 @@ def _write_metadata_file(metadata, filename, attribute_name):
         metadata = np.concatenate(metadata).tolist()
     with open(filepath, "a") as metadata_file:
         metadata_file.writelines(metadata)
-    warnings.warn(f"{attribute_name} has been written to sidecar file {filepath}")
+    _LOGGER = logging.getLogger(__name__)
+    _LOGGER.info(f"{attribute_name} has been written to sidecar file {filepath}")
