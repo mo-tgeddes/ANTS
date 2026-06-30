@@ -399,8 +399,8 @@ def _write_metadata_file(metadata, filename, attribute_name):
     appended to it.
     """
     filepath = str(filename) + "." + attribute_name
-    # flatten list, if metadata contains list of list - possible in cases where metadata
-    # is being read in
+    # Order metadata to be in one list, if metadata contains list of list - possible in
+    # cases where metadata is being read in
     if any(isinstance(element, list) for element in metadata):
         metadata = np.concatenate(metadata).tolist()
     with open(filepath, "a") as metadata_file:
