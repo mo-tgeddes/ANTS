@@ -2,12 +2,11 @@
 #
 # This file is part of ANTS and is released under the BSD 3-Clause license.
 # See LICENSE.txt in the root of the repository for full licensing details.
-import os
 from unittest import mock
 
 import ants.tests.stock as stock
 import pytest
-from ants.io.save import _write_metadata
+from ants.io.save import _check_and_sort_metadata_attributes
 
 
 @pytest.mark.filterwarnings(
@@ -20,7 +19,7 @@ def test_license_attribute_written(tmp_path):
     cube.attributes["license"] = license
     cube.rename("license test cube")
     filename = tmp_path / "test_cube"
-    _write_metadata([cube], filename)
+    _check_and_sort_metadata_attributes([cube], filename)
     expected_filename = str(filename) + ".license"
     with open(expected_filename, "r") as file:
         actual_license = file.read()
@@ -43,7 +42,7 @@ def test_loaded_license_written(tmp_path):
     cube.attributes["license"] = loaded_license
     cube.rename("loaded license test cube")
     filename = tmp_path / "test_cube"
-    _write_metadata([cube], filename)
+    _check_and_sort_metadata_attributes([cube], filename)
     expected_filename = str(filename) + ".license"
     with open(expected_filename, "r") as file:
         actual_license = file.readlines()
@@ -61,7 +60,7 @@ def test_warning_given():
     # mocks out the opening of files, so no file is created
     with mock.patch("builtins.open"):
         with pytest.raises(UserWarning, match=expected_message):
-            _write_metadata([cube], "filename")
+            _check_and_sort_metadata_attributes([cube], "filename")
 
 
 @pytest.mark.filterwarnings(
@@ -85,7 +84,7 @@ def test_multiple_cubes(tmp_path):
     cubelist = [cube1, cube2, cube3]
     filename = tmp_path / "multiple_cube_test"
     # The actual test
-    _write_metadata(cubelist, filename)
+    _check_and_sort_metadata_attributes(cubelist, filename)
     expected_filename = str(filename) + ".license"
     with open(expected_filename, "r") as file:
         actual_license = file.read()
@@ -97,16 +96,7 @@ def test_multiple_cubes(tmp_path):
     assert actual_license == expected_license
 
 
-@pytest.mark.filterwarnings(
-    "ignore:license has been written to sidecar file /var/tmp/:UserWarning"
-)
-@pytest.mark.filterwarnings(
-    "ignore:attribution has been written to sidecar file /var/tmp/:UserWarning"
-)
-@pytest.mark.filterwarnings(
-    "ignore:restrictions has been written to sidecar file /var/tmp/:UserWarning"
-)
-def test_all_different_attributes_written_out(tmp_path):
+def test_all_different_attributes_written_out():
     """Tests that a cube with a multiple different attributes writes
     out all metadata files."""
     cube = stock.geodetic(shape=(2, 2))
@@ -116,8 +106,24 @@ def test_all_different_attributes_written_out(tmp_path):
         "This data is restricted to be used for testing purposes only."
     )
     cube.attributes["license"] = "This is a license for the data"
-    filename = tmp_path / "test_multiple_attributes"
-    _write_metadata([cube], filename)
-    assert os.path.exists(str(filename) + ".attribution")
-    assert os.path.exists(str(filename) + ".restrictions")
-    assert os.path.exists(str(filename) + ".license")
+    filename = "test_multiple_attributes"
+    with mock.patch("ants.io.save._write_metadata_file") as mock_method:
+        _check_and_sort_metadata_attributes([cube], filename)
+
+    expected_license = mock.call(
+        ["This is a license for the data"], "test_multiple_attributes", "license"
+    )
+    expected_attribution = mock.call(
+        ["This data came from an institution. "],
+        "test_multiple_attributes",
+        "attribution",
+    )
+    expected_restrictions = mock.call(
+        ["This data is restricted to be used for testing purposes only."],
+        "test_multiple_attributes",
+        "restrictions",
+    )
+
+    assert expected_license in mock_method.call_args_list
+    assert expected_attribution in mock_method.call_args_list
+    assert expected_restrictions in mock_method.call_args_list
