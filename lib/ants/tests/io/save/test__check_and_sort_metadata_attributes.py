@@ -46,10 +46,10 @@ def test_loaded_license_written(tmp_path):
 def test_log_output(caplog):
     """Tests that the logger gives the correct output when a file is written out."""
     cube = stock.geodetic(shape=(2, 2))
-    attribution = "This data came from an institution. "
-    cube.attributes["attribution"] = attribution
+    institution = "This data came from Unseen University. "
+    cube.attributes["institution"] = institution
     expected_message = (
-        "attribution has been written to sidecar file filename.attribution"
+        "institution has been written to sidecar file filename.institution"
     )
     # mocks out the opening of files, so no file is created
     with mock.patch("builtins.open"):

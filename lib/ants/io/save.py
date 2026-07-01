@@ -346,7 +346,14 @@ def _check_and_sort_metadata_attributes(cubes, data_filepath):
     # a dictionary to keep track of which cubes have metadata
     cube_names_dictionary = {}
     # a list of approved attributes that can be saved
-    attributes_to_save = ["license", "attribution", "restrictions"]
+    attributes_to_save = [
+        "license",
+        "attribution",
+        "restrictions",
+        "institution",
+        "acknowledgement",
+        "references",
+    ]
     for cube in cubes:
         for key, value in cube.attributes.items():
             # check the attribute is one we want to save
