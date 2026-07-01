@@ -46,7 +46,7 @@ def test_loaded_license_written(tmp_path):
 def test_log_output(caplog):
     """Tests that the logger gives the correct output when a file is written out."""
     cube = stock.geodetic(shape=(2, 2))
-    institution = "This data came from Unseen University. "
+    institution = "This data came from University Blah. "
     cube.attributes["institution"] = institution
     expected_message = (
         "institution has been written to sidecar file filename.institution"
