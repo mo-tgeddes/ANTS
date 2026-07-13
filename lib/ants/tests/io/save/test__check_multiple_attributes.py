@@ -40,7 +40,7 @@ def test_all_elements_in_list_same():
 
 def test_different_elements_have_cube_names():
     """Tests that when multiple attributes are given, cube names are included."""
-    expected = ["cube1 = license 1. ", "cube2 = license 2. "]
+    expected = ["cube1 = license 1. \n", "cube2 = license 2. \n"]
     licenses = ["license 1. ", "license 2. "]
     cube_names = ["cube1", "cube2"]
     actual = _check_multiple_attributes(licenses, cube_names)

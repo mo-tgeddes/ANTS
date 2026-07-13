@@ -159,7 +159,11 @@ def main(
         save.ukca_netcdf(regridded_cubes, output_path)
     else:
         if not netcdf_only:
-            save.ancil(regridded_cubes, output_path)
+            save.ancil(
+                regridded_cubes,
+                output_path,
+                ignore_writing_metadata_files=ignore_metadata_files,
+            )
         save.netcdf(regridded_cubes, output_path)
 
     return regridded_cubes
