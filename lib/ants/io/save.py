@@ -365,7 +365,7 @@ def _check_and_sort_metadata_attributes(cubes, data_filepath):
                     metadata_dictionary[key] = [value]
                     cube_names_dictionary[key + "_names"] = [cube.name()]
     for key, value in metadata_dictionary.items():
-        # sort the metadata ready to save
+        # Update the metadata ready to save
         metadata_dictionary[key] = _check_multiple_attributes(
             metadata_dictionary[key], cube_names_dictionary[key + "_names"]
         )
