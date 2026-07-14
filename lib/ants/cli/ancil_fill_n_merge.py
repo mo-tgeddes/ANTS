@@ -104,11 +104,8 @@ def main(
     end,
     netcdf_only,
     search_method,
-<<<<<<< main
     blending_distance,
-=======
     ignore_metadata_files,
->>>>>>> load_save_feature_branch
 ):
     """
     Perform merge and fill operation on the provided sources.
@@ -159,17 +156,14 @@ def main(
     search_method : :obj:`str`
         Select the search method to be used when filling missing points. The methods
         currently supported are "spiral" and "kdtree".
-<<<<<<< main
     blending_distance : float
         Distance over which blending between the primary and alternate sources
         is applied. Note that this is in units of grid cells, not a physical distance.
         If ``None``, no blending is applied, and there will be a hard edge between
         the two sources.
-=======
     ignore_metadata_files : :obj:`bool`, optional
         When set to True, files containing metadata will not be loaded alongside data
         and added as attributes to the cube.
->>>>>>> load_save_feature_branch
 
     Returns
     -------
@@ -289,11 +283,8 @@ def cli_interface():
         end=args.end,
         netcdf_only=args.netcdf_only,
         search_method=args.search_method,
-<<<<<<< main
         blending_distance=args.blending_distance,
-=======
         ignore_metadata_files=args.ignore_metadata_files,
->>>>>>> load_save_feature_branch
     )
 
 
