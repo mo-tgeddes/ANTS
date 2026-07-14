@@ -689,37 +689,40 @@ def update_history(cube, string, date=None, add_date=True):
 
     Parameters
     ----------
-    cube : :class:`~iris.cube.Cube`
-        Cube to modify its history attribute.
+    cube : :class:`~iris.cube.Cube` or :class:`~iris.cube.CubeList`
+        Cube or CubeList to modify its history attribute.
+        If CubeList then all Cubes will be given an identical history update.
     string : str
         Content to populate the history attribute.
-    date : :obj:`datetime.datetime`, optional
-        ISO-format date stamp for the history atribute update.  If not
-        provided, the current date is determined.
     add_date : :obj:`bool`, optional
         Boolean to determine whether the date should be prepended to
         the history content string. True by default.
-
     """
 
-    if date and not add_date:
-        raise RuntimeError(
-            "Incompatible arguments provided: the date argument is set "
-            f"to {date} and the add_date argument is set to False."
+    if date:
+        warnings.warn(
+            "The date option in ants.utils.cube.update_history has been deprecated."
+            "If add_date is true then the current date and time will be used. "
+            "Cubelists can be passed directly to update_history to be updated with an "
+            "identical history attribute.",
+            FutureWarning,
         )
 
+    cubes = as_cubelist(cube)
+
     if add_date:
-        if not date:
-            date = datetime.today()
+        date = datetime.today()
         date = date.replace(microsecond=0)
 
-        history = "{}: {}".format(date.isoformat(), string)
+        history = f"{date.isoformat()}: {string}"
     else:
         history = string
 
-    if "history" in cube.attributes:
-        history = "\n".join([history, cube.attributes["history"]])
-    cube.attributes["history"] = history
+    for cc in cubes:
+        cube_history = history
+        if "history" in cc.attributes:
+            cube_history = "\n".join([history, cc.attributes["history"]])
+        cc.attributes["history"] = cube_history
 
 
 def get_slices(source, ylim, xlim, pad_width=0):
@@ -1467,7 +1470,7 @@ def extract_region_by_geometry(cube: iris.cube.Cube, geom: shapely.Polygon):
 
     * The "extraction geometry" is the geometry we use to extract the cube sub region,
       using a buffer of 0.25 * region size
-    * The "containment geometry" is the geometry we use to constrain the floodfill,
+    * The "containment geometry" is the geometry we use to constrain the flood fill,
       using a buffer of 0.2 * region size
 
     Parameters
@@ -1557,3 +1560,24 @@ def fetch_seed_index(cube, seed):
     xd = abs(x.points - seed[1]).argmin()
     yd = abs(y.points - seed[0]).argmin()
     return xd, yd
+
+
+def is_single_level(cube: iris.cube.Cube) -> bool:
+    """Determine if a cube is defined on a single horizontal level.
+
+    A cube is identified as single level if it is 2-dimensional, and those
+    dimensions correspond to the x and y axes (in any order).
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        The cube to check
+
+    Returns
+    -------
+    bool
+        Whether the cube is defined on a single horizontal level
+    """
+    axes = {iris.util.guess_coord_axis(coord).lower() for coord in cube.dim_coords}
+    condition = cube.ndim == 2 and axes == {"x", "y"}
+    return condition

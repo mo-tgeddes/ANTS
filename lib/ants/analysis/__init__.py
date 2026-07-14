@@ -56,6 +56,7 @@ __all__ = [
     "merge",
     "standard_deviation",
     "floodfill",
+    "flood_fill",
     "find_similar_region",
     "make_consistent_with_lsm",
     "horizontal_grid_reorder",
@@ -70,14 +71,16 @@ __all__ = [
 def calc_grad(source):
     """
     .. attention::
-       The calc_grad routine has been removed from the core ants library at version 2.2.
-       It has been moved to Apps/Orography/orography_utils.py in the contrib
-       repository.
-       Attempting to use this function will result in an ImportError.
+       The calc_grad routine has been removed from the core ants library at
+       version 2.2.  It has been moved to Apps/Orography/orography_utils.py in
+       the ancillary-file-science repository.  Attempting to use this function
+       will result in an ImportError.
+
     """
     raise ImportError(
         "The calc_grad routine has been removed from the core ants library. It has been"
-        " moved to Apps/Orography/orography_utils.py in the contrib repository."
+        " moved to Apps/Orography/orography_utils.py in the ancillary-file-science "
+        "repository."
     )
 
 
@@ -184,7 +187,7 @@ def standard_deviation(source, src_mean):
     return awm
 
 
-def merge(primary_cube, alternate_cube, validity_polygon=None):
+def merge(primary_cube, alternate_cube, validity_polygon=None, blending_distance=None):
     """
     Merges data from the alternative cube into the primary cube.
 
@@ -192,8 +195,15 @@ def merge(primary_cube, alternate_cube, validity_polygon=None):
     cube which lay outside the provided polygon, override the values of the
     primary at those locations.  Containment is defined as any cell corner
     which lies within the polygon.  "Within" explicitly does not include
-    those points which exactly lay on the polygon boundary.  Where multiple
-    primary and alternate cubes are provided, then these are paired
+    those points which exactly lay on the polygon boundary.
+
+    A blending between the sources can be applied by specifying the
+    ``blending_distance`` (for no blending, pass ``None``). A linear blending
+    between the primary and alternate sources will be applied in the region
+    immediately inside the polygon over the blending distance.
+    Beyond the blending distance, the alternate source is used.
+
+    Where multiple primary and alternate cubes are provided, then these are paired
     appropriately where possible.  Where these datasets are not defined on the
     same grid, the user should consider a regrid first to then utilise merge.
 
@@ -217,6 +227,12 @@ def merge(primary_cube, alternate_cube, validity_polygon=None):
         stacked together with the primary_cube taking priority over
         alternate_cube in the case of an overlap. A runtime error will be
         raised if the primary_cube is wholly within the validity_polygon.
+    blending_distance : float
+        Distance over which blending between the primary and alternate sources
+        is applied. Note that this is in units of grid cells, not a physical distance.
+        If ``None``, no blending is applied, and there will be a hard edge between
+        the two sources. This option is only valid with a provided validity polygon,
+        and with a single level field.
 
     Returns
     -------
@@ -232,20 +248,52 @@ def merge(primary_cube, alternate_cube, validity_polygon=None):
     primary_cubes = ants.utils.cube.as_cubelist(primary_cube)
     alternate_cubes = ants.utils.cube.as_cubelist(alternate_cube)
 
+    if blending_distance:
+        _validate_args_with_blending(
+            primary_cubes, alternate_cubes, validity_polygon, blending_distance
+        )
+
     # Group (sort) cubes so they are ordered in a way suitable for merging.
     primary_cubes, alternate_cubes = ants.utils.cube.sort_cubes(
         primary_cubes, alternate_cubes
     )
     result = iris.cube.CubeList([])
     for src1, src2 in zip(primary_cubes, alternate_cubes):
-        nsource = _merge.merge(src1, src2, validity_polygon)
+        nsource = _merge.merge(src1, src2, validity_polygon, blending_distance)
         result.append(nsource)
     if isinstance(primary_cube, iris.cube.Cube):
         result = result[0]
     return result
 
 
-def _floodfill_neighbour_identify(
+def _validate_args_with_blending(
+    primary_cubes, alternate_cubes, validity_polygon, blending_distance
+):
+    """Specific validation for merge arguments when blending is provided."""
+    if validity_polygon is None:
+        raise ValueError(
+            "blending_distance can only be used with a validity_polygon. "
+            f"No polygon was provided, but got {blending_distance=}"
+        )
+
+    all_primary_single_level = all(map(ants.utils.cube.is_single_level, primary_cubes))
+    if not all_primary_single_level:
+        raise ValueError(
+            "Blending is only supported for single level data sources. "
+            "The primary data source is not single level"
+        )
+
+    all_alternate_single_level = all(
+        map(ants.utils.cube.is_single_level, alternate_cubes)
+    )
+    if not all_alternate_single_level:
+        raise ValueError(
+            "Blending is only supported for single level data sources. "
+            "The alternate data source is not single level"
+        )
+
+
+def _flood_fill_neighbour_identify(
     shape, coords, seed_point, extended_neighbourhood, wraparound
 ):
     (yy, xx) = seed_point
@@ -273,12 +321,28 @@ def floodfill(
     array, seed_point, fill_value, extended_neighbourhood=False, wraparound=False
 ):
     """
-    Floodfill via an iterative algorithm.
+    .. deprecated:: vn4.0
+        Use :func:`ants.analysis.flood_fill` instead.
+    """
+    warnings.warn(
+        "ants.analysis.floodfill has been deprecated. Please use "
+        "ants.analysis.flood_fill instead.",
+        FutureWarning,
+    )
+
+    return flood_fill(array, seed_point, fill_value, extended_neighbourhood, wraparound)
+
+
+def flood_fill(
+    array, seed_point, fill_value, extended_neighbourhood=False, wraparound=False
+):
+    """
+    Flood fill via an iterative algorithm.
 
     Parameters
     ----------
     array : :class:`~numpy.ndarray`
-        The array to apply the floodfill.
+        The array to apply the flood fill.
     seed_point : tuple
         The starting (y, x) index (the seed point).
     fill_value : int or float
@@ -316,7 +380,7 @@ def floodfill(
         yy, xx = coords.pop()
         if array[yy, xx] == value_at_seed:
             array[yy, xx] = fill_value
-            _floodfill_neighbour_identify(
+            _flood_fill_neighbour_identify(
                 array.shape, coords, (yy, xx), extended_neighbourhood, wraparound
             )
 
@@ -397,7 +461,7 @@ def find_small_feature_seed_points(
     while candidate_inds:
         seed_point = candidate_inds.pop()
         filled = array.copy()
-        floodfill(filled, seed_point, fill_value, extended_neighbourhood, wraparound)
+        flood_fill(filled, seed_point, fill_value, extended_neighbourhood, wraparound)
 
         filled_inds = np.where(filled == fill_value)
         filled_inds = list(zip(list(filled_inds[0]), list(filled_inds[1])))
@@ -421,7 +485,7 @@ def find_similar_region(
     """
     Return a set of indices where the connecting neighbours have the same value
 
-    This function is functionaly equivelent :func:`floodfill`, except that
+    This function is functionaly equivelent :func:`flood_fill`, except that
     here the fill locations are returned rather than filled.
 
     Parameters
@@ -468,7 +532,7 @@ def find_similar_region(
         if not visited[yy, xx] and array[yy, xx] == src_value:
             visited[yy, xx] = True
             indices.add((yy, xx))
-            _floodfill_neighbour_identify(
+            _flood_fill_neighbour_identify(
                 array.shape, coords, (yy, xx), extended_neighbourhood, wraparound
             )
     return tuple([[ind[i] for ind in list(indices)] for i in range(array.ndim)])

@@ -4,27 +4,27 @@ To be completed prior to review request **and updated** as required during the r
 
 If the answer to an item on the list is not applicable, feel free to replace the checkbox with 'N/A' to give extra clarity.
 
-**All developers are reminded to follow the [ancil working practices](https://code.metoffice.gov.uk/trac/ancil/wiki/ANTS/WorkingPractices)**
+**All developers are reminded to follow the [ancil working practices](https://metoffice.github.io/ancil-working-practices)**
 
 -----
 
 ### Branch
 
-**Related branches (e.g. contrib):**<br>
+**Related branches (e.g. ancillary-file-science):**<br>
 [please link any related branches here]
 
 **ANTS rose stem logs** <br>
 [please enter the workflow name here as it has been run e.g. ants-trunk/run5] <br>
 
 
-**contrib rose stem logs** <br>
-[please enter the workflow name here as it has been run e.g. ants-contrib/run1] <br>
+**ancillary-file-science rose stem logs** <br>
+[please enter the workflow name here as it has been run e.g. ancillary-file-science/run1] <br>
 
 -----
 
 ### Testing
 
-For core ANTS only tests, the bare minimum that will be accepted is the `--group=unittests` but many, if not most, changes will need to test other groups to ensure they meet reviewer expectations. In general, it should be possible and is advised to run the `--group=all` group prior to review submission as this will catch any consequential issues. **Additionally** you **must** run the contrib tests, pointing at your branch, with `--group=all` to capture any behaviour changes affecting Science codes.
+For core ANTS only tests, the bare minimum that will be accepted is the `group=unittests` but many, if not most, changes will need to test other groups to ensure they meet reviewer expectations. In general, it should be possible and is advised to run the `group=all` group prior to review submission as this will catch any consequential issues. **Additionally** you **must** run the `ancillary-file-science` tests, pointing at your branch, with `group=all` to capture any behaviour changes affecting Science codes.
 
 If your change will alter existing science results, you will need to seek appropriate Scientific validation and confirm that the model has been initialised with your new development. Inspecting a change in xconv/pyplot/visualiser of choice is not sufficient to demonstrate the model can be initialised from your file.
 
@@ -32,8 +32,8 @@ If your change will alter existing science results, you will need to seek approp
 
 **Impact of change**
 
-- [ ] This will maintain results for ANTS `rose stem --group=all` tests
-- [ ] This will this maintain results for contrib `rose stem --group=all` tests
+- [ ] This will maintain results for ANTS `cylc vip ./rose-stem -z group=all` tests
+- [ ] This will this maintain results for ancillary-file-science `cylc vip ./rose-stem -z group=all` tests
 - [ ] If this change adds a new capability, evidence has been supplied to show testing of ancillary generation across different resolutions e.g. For global ancillary generation capabilities for use in NWP n1280e is expected to have been tested
 - [ ] This change has significantly impacted required resources (runtime and memory) in existing ancillary generation (if yes, give details)
 - [ ] This change alters existing ancils
@@ -67,8 +67,8 @@ Add details of any further testing here.
 ------
 
 **Other**
-- [ ] I read the [Contributor Licence Agreement](https://metoffice.github.io/ANTS/contributing.html#contributor-licence-agreement-v1-1)
-- [ ] I have added my name and affiliation to the [Contributors list](https://github.com/MetOffice/ANTS/blob/main/CONTRIBUTING.rst#code-contributors) if I am not already on there.
+- [ ] I have read the [Contributor Licence Agreement](https://metoffice.github.io/ANTS/contributing.html#contributor-licence-agreement-v1-1)
+- [ ] I have added my name and affiliation to the [Contributors list](https://github.com/MetOffice/ANTS/blob/main/CONTRIBUTING.rst#code-contributors) if I am not already on there in this PR.
 - [ ] The issue labels, milestones, etc. are correct
 - [ ] Links to all related issues have been provided in the pull request description
 - [ ]  I have requested a code reviewer
@@ -77,7 +77,7 @@ Add details of any further testing here.
 | | |
 |---|---|
 | I confirm that all code is my own and that my contributions are not subject to copyright or license restrictions (see [Contributor Licence Agreement](https://metoffice.github.io/ANTS/contributing.html#contributor-licence-agreement-v1-1)). | **your name** |
-| I confirm I have not knowingly violated intellectual property rights (IPR) and have taken [sensible measures to prevent doing so](https://code.metoffice.gov.uk/trac/ancil/wiki/ANTS/WorkingPractices#LicencecopyrightandIPR), including appropriate [attribution for usage of Generative AI](https://code.metoffice.gov.uk/trac/ancil/wiki/ANTS/WorkingPractices#AIassistanceandattribution). I confirm that this work is my own, and I understand that it is my responsibility to ensure I am not violating others’ IPR.  This includes taking reasonable steps to ensure that all tools used while creating this contribution did not infringe IPR. | **your name** |
+| I confirm I have not knowingly violated intellectual property rights (IPR) and have taken [sensible measures to prevent doing so](https://metoffice.github.io/ancil-working-practices/working_practices/developer/licence-attribution.html), including appropriate [attribution for usage of Generative AI](https://metoffice.github.io/ancil-working-practices/working_practices/developer/licence-attribution.html#ai-assistance-and-attribution). I confirm that this work is my own, and I understand that it is my responsibility to ensure I am not violating others’ IPR.  This includes taking reasonable steps to ensure that all tools used while creating this contribution did not infringe IPR. | **your name** |
 
 <div>
 Please add any further notes here.  If Generative AI tools have been used, a brief summary (e.g. "Github copilot used to add extra unittests") should be provided.
@@ -86,12 +86,12 @@ Please add any further notes here.  If Generative AI tools have been used, a bri
 --------
 ### Rose stem logs
 
-Please copy in the contents of your trac_status.log file(s) below (found in the cylc-run directory for your rose stem run) to your rose-stem testing here. **Note**: if your changes lead to a change in answers, you must run `rose stem --group=all` to help ensure all affected configurations has been flagged up.
+Please copy in the contents of your trac_status.log file(s) below (found in the cylc-run directory for your rose stem run) to your rose-stem testing here. **Note**: if your changes lead to a change in answers, you must run `cylc vip ./rose-stem -z group=all` to help ensure all affected configurations has been flagged up.
 
 <div>
 Add workflow_status.log contents for ANTS rose-stem here.
 </div>
 <br>
 <div>
-Add trac_status.log contents for contrib rose-stem here.
+Add workflow_status.log contents for ancillary-file-science rose-stem here.
 </div>
