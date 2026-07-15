@@ -475,7 +475,7 @@ class _CallbackMetadata(object):
                 )
             else:
                 open_file = open(metadata_file, "r")
-                metadata = open_file.readlines()
+                metadata = open_file.read()
                 open_file.close()
                 cube.attributes[attribute_name] = metadata
 
