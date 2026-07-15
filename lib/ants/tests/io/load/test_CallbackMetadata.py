@@ -23,12 +23,10 @@ def test_metadata_files_added_to_attributes(tmp_path):
     It should be preserved and added to the cube when loaded.
     """
     # How the text should look while stored in an array
-    loaded_license = [
-        "This is the license of the cube.\n",
-        "\n",
-        "    It should be preserved and added to the cube when loaded.\n",
-        "    ",
-    ]
+    loaded_license = (
+        "This is the license of the cube.\n\n    It should be preserved"
+        " and added to the cube when loaded.\n    "
+    )
     test_cube = ants.tests.stock.geodetic(shape=(2, 2))
     temporary_cube_path = tmp_path / "cube_attribute.pp"
     iris.save(test_cube, str(temporary_cube_path))
@@ -166,7 +164,7 @@ def test_misspelt_license_added(tmp_path):
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", message=warning_message, category=UserWarning)
         loaded_cube = ants.io.load.load_cube(temporary_cube_path)
-        assert loaded_cube.attributes["license"] == ["a license"]
+        assert loaded_cube.attributes["license"] == "a license"
 
 
 def test_invalid_metadata_name(tmp_path):
