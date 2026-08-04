@@ -404,6 +404,8 @@ def _add_callback(callback, *args, **kwargs):
     args = list(args)
     if len(args) == 1:
         kwargs["callback"] = callback
+    elif len(args) == 2:
+        args.append(callback)
     elif len(args) == 3:
         args[2] = callback
     args = tuple(args)
