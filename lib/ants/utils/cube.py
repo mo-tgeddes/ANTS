@@ -1139,6 +1139,54 @@ def inherit_metadata(source, reference):
         source.attributes["grid_staggering"] = reference.attributes["grid_staggering"]
 
 
+def copy_metadata_attributes(
+    source,
+    reference,
+    approved_metadata=[
+        "license",
+        "attribution",
+        "restrictions",
+        "institution",
+        "acknowledgement",
+        "references",
+    ],
+):
+    """
+    Inherit cube metadata attributes from a provided reference.
+
+    In-place operation on source cube.
+
+    Metadata attributes from the refrence are added into the source cube. This is done
+    in the manner of `attribute: cube-name = metadata content` for tracebaility and
+    allowing for the stacking of metadata.
+
+    Parameters
+    ----------
+    source : :class:`iris.cube.Cube`
+        Source to have its metadata update.
+    reference : :class:`iris.cube.Cube`
+        Reference which defines the metadata to inherit from.
+    """
+
+    for attribute in approved_metadata:
+        if attribute in reference.attributes:
+            if attribute in source.attributes:
+                if source.attributes[attribute] != reference.attributes[attribute]:
+                    source.attributes[attribute] = (
+                        source.name()
+                        + " = "
+                        + source.attributes[attribute]
+                        + "\n"
+                        + reference.name()
+                        + " = "
+                        + reference.attributes[attribute]
+                    )
+            else:
+                source.attributes[attribute] = (
+                    reference.name() + " = " + reference.attributes[attribute]
+                )
+
+
 def set_crs(cube, crs=None):
     """
     Set cube coordinate system.
