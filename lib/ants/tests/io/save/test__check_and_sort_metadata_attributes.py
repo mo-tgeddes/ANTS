@@ -6,6 +6,7 @@ import logging
 from unittest import mock
 
 import ants.tests.stock as stock
+import pytest
 from ants.io.save import _check_and_sort_metadata_attributes
 
 
@@ -21,6 +22,24 @@ def test_license_attribute_written(tmp_path):
     with open(expected_filename, "r") as file:
         actual_license = file.read()
     assert actual_license == license
+
+
+@pytest.mark.filterwarnings(
+    "ignore:The attribute name licence has been changed to 'license', in line with "
+    "ANTS working practices.:UserWarning"
+)
+def test_licence_attribute_written(tmp_path):
+    """Tests that a cube with a licence  is changed and written out."""
+    cube = stock.geodetic(shape=(2, 2))
+    licence = "This is a cube's license. "
+    cube.attributes["licence"] = licence
+    cube.rename("licence test cube")
+    filename = tmp_path / "test_cube"
+    _check_and_sort_metadata_attributes([cube], filename)
+    expected_filename = str(filename) + ".license"
+    with open(expected_filename, "r") as file:
+        actual_license = file.read()
+    assert actual_license == licence
 
 
 def test_loaded_license_written(tmp_path):
