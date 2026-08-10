@@ -353,6 +353,13 @@ def _check_and_sort_metadata_attributes(cubes, data_filepath):
     for cube in cubes:
         for key, value in cube.attributes.items():
             # check the attribute is one we want to save
+            if key == "licence":
+                warnings.warn(
+                    "The attribute name licence has been changed to "
+                    "'license', in line with ANTS working practices.",
+                    category=UserWarning,
+                )
+                key = "license"
             if key in attributes_to_save:
                 if key in metadata_dictionary:
                     metadata_dictionary[key].append(value)
