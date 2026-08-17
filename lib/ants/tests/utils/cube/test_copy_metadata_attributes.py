@@ -67,3 +67,18 @@ def test_non_standard_attribute():
     with pytest.raises(KeyError, match=expected_msg):
         # Check the attribute hasn't been copied over
         source.attributes["a value not in the allowed list"]
+
+
+def test_different_attribute_list():
+    """Tests that a different attribute list will copy over those attributes."""
+    # Source cube:
+    source = stock.geodetic(shape=(1, 2))
+    # Reference cube:
+    reference = stock.geodetic(shape=(3, 4))
+    reference.attributes["test-attribute"] = "an attribute not in the standard list."
+    reference.rename("test cube")
+    copy_metadata_attributes(source, reference, metadata_to_copy=["test-attribute"])
+    assert (
+        source.attributes["test-attribute"]
+        == "test cube = an attribute not in the standard list."
+    )
