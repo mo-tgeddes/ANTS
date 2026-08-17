@@ -1142,7 +1142,7 @@ def inherit_metadata(source, reference):
 def copy_metadata_attributes(
     source,
     reference,
-    approved_metadata=[
+    metadata_to_copy=[
         "license",
         "attribution",
         "restrictions",
@@ -1168,7 +1168,7 @@ def copy_metadata_attributes(
         Reference which defines the metadata to inherit from.
     """
 
-    for attribute in approved_metadata:
+    for attribute in metadata_to_copy:
         if attribute in reference.attributes:
             if attribute in source.attributes:
                 if source.attributes[attribute] != reference.attributes[attribute]:
