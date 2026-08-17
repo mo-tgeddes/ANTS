@@ -1175,10 +1175,13 @@ def copy_metadata_attributes(
         if attribute in reference.attributes:
             # If the attribute already exists in the source cube.
             if attribute in source.attributes:
+                # Remove whitepace before comparisons.
+                source_compare = " ".join(source.attributes[attribute].split())
+                reference_compare = " ".join(reference.attributes[attribute].split())
                 # If the attributes are the same then nothing needs to be done.
                 # If the attributes are not the same then both names must be prepended
                 # to ensure that the metadata is traceable.
-                if source.attributes[attribute] != reference.attributes[attribute]:
+                if source_compare != reference_compare:
                     source.attributes[attribute] = (
                         source.name()
                         + " = "

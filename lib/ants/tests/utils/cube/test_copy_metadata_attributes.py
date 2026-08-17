@@ -82,3 +82,31 @@ def test_different_attribute_list():
         source.attributes["test-attribute"]
         == "test cube = an attribute not in the standard list."
     )
+
+
+def test_same_attributes():
+    """Tests that if both cubes have the same attribute, nothing happens."""
+    # Source cube:
+    source = stock.geodetic(shape=(1, 2))
+    source.attributes["restrictions"] = "a test restriction"
+    # Reference cube
+    reference = stock.geodetic(shape=(3, 4))
+    reference.attributes["restrictions"] = "a test restriction"
+    # Copy the metadata
+    copy_metadata_attributes(source, reference)
+    # Check that the attribute is unchanged
+    assert source.attributes["restrictions"] == "a test restriction"
+
+
+def test_different_whitespace():
+    """Tests that attributes with different whitespace will be registered as equal."""
+    # Source cube:
+    source = stock.geodetic(shape=(1, 2))
+    source.attributes["restrictions"] = "a test restriction"
+    # Reference cube
+    reference = stock.geodetic(shape=(3, 4))
+    reference.attributes["restrictions"] = "a      test restriction      "
+    # Copy the metadata
+    copy_metadata_attributes(source, reference)
+    # Check that the attribute is unchanged
+    assert source.attributes["restrictions"] == "a test restriction"
