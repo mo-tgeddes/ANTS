@@ -1166,6 +1166,8 @@ def copy_metadata_attributes(
         Source to have its metadata update.
     reference : :class:`iris.cube.Cube`
         Reference which defines the metadata to inherit from.
+    metadata_to_copy : list
+        A list of metadata attribute keys to copy to the source cube.
     """
 
     for attribute in metadata_to_copy:
