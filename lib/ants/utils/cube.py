@@ -1173,7 +1173,7 @@ def copy_metadata_attributes(
     for attribute in metadata_to_copy:
         # Only copy an attribute if it exists in the reference cube.
         if attribute in reference.attributes:
-            # If the attribute already exists in the source cube
+            # If the attribute already exists in the source cube.
             if attribute in source.attributes:
                 # If the attributes are the same then nothing needs to be done.
                 # If the attributes are not the same then both names must be prepended
@@ -1189,7 +1189,7 @@ def copy_metadata_attributes(
                         + reference.attributes[attribute]
                     )
             else:
-                # If the attribute does not exist in the source cube
+                # If the attribute does not exist in the source cube.\
                 source.attributes[attribute] = (
                     reference.name() + " = " + reference.attributes[attribute]
                 )
