@@ -1192,7 +1192,7 @@ def copy_metadata_attributes(
                         + reference.attributes[attribute]
                     )
             else:
-                # If the attribute does not exist in the source cube.\
+                # If the attribute does not exist in the source cube.
                 source.attributes[attribute] = (
                     reference.name() + " = " + reference.attributes[attribute]
                 )
