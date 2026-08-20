@@ -337,6 +337,9 @@ def _check_and_sort_metadata_attributes(cubes, data_filepath):
     data_filepath : str
         The name of the file where the data will be saved to.
     """
+    print("looking for metadata")
+    print(cubes)
+    print(cubes[0].attributes)
     # a dictionary to contain all of the metadata to be saved
     metadata_dictionary = {}
     # a dictionary to keep track of which cubes have metadata
