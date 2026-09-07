@@ -19,6 +19,12 @@ the naming convention of `filename.attribute.accepted-metadata`. The current acc
 metadata attributes are "license", "attribution", "restrictions", "institution",
 "acknowledgement", and "references".
 
+This functionality can be turned off through the use of the argument
+``--ignore-metadata-files`` on the command line or when calling the ANTS load:
+
+.. code-block:: python
+    cube = ants.io.load('data', ignore_metadata_files=True)
+
 
 .. note::
     Any attributes or files referencing licensing should use the 'license' spelling for
