@@ -23,6 +23,7 @@ This functionality can be turned off through the use of the argument
 ``--ignore-metadata-files`` on the command line or when calling the ANTS load:
 
 .. code-block:: python
+
     cube = ants.io.load('data', ignore_metadata_files=True)
 
 
