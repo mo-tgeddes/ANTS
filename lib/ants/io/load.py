@@ -450,7 +450,14 @@ class _CallbackMetadata(object):
             The cube being loaded.
 
         """
-        valid_metadata_names = ["license", "attribution", "restrictions"]
+        valid_metadata_names = [
+            "license",
+            "attribution",
+            "restrictions",
+            "institution",
+            "acknowledgement",
+            "references",
+        ]
         other_license = "licence"
         for metadata_file in metadata_files:
             file_name_splits = str(metadata_file).split(".")
