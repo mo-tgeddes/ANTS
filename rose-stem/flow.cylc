@@ -259,6 +259,14 @@ fi
     inherit = ANTS_CORE, ANCIL_GENERAL_REGRID, LARGE
     script = rose task-run --app-key=ancil_general_regrid -O metadata
 
+    [[rose_ana_general_regrid_metadata]]
+        inherit = ROSE_ANA
+        [[[environment]]]
+            ROSE_TASK_APP = rose_ana
+            ROSE_APP_OPT_CONF_KEYS = general_regrid_metadata
+            ANTS_KGO_DIRECTORY_OVERRIDE = /data/users/theo.geddes/ants-source/KGO/
+
+
     [[rose_ana_general_regrid]]
         inherit = ROSE_ANA
         [[[environment]]]
