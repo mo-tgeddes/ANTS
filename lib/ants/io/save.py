@@ -336,7 +336,7 @@ def _check_and_sort_metadata_attributes(cubes, data_filepath):
     and calls `_write_metadata_file` for each attribute.
     Parameters
     ----------
-    cubes : :class:`iris.cube.Cube` or :class:`iris.cube.CubeList`
+    cubes : :class:`iris.cube.CubeList`
         One or more cubes to be saved.
     data_filepath : str
         The name of the file where the data will be saved to.
