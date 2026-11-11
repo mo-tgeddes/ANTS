@@ -105,7 +105,7 @@ This functionality can be turned off through the use of the argument
 
 .. code-block:: python
 
-    cube = ants.io.load.load("/path/to/source_file" ,ignore_metadata_read=True)
+    cube = ants.io.load.load("/path/to/source_file", ignore_metadata_read=True)
 
 
 .. note::
