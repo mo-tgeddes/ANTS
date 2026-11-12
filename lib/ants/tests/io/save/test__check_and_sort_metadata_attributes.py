@@ -46,7 +46,7 @@ def test_global_and_local_metadata():
 
 @pytest.mark.filterwarnings(
     "ignore:The attribute name licence has been changed to 'license', in line with "
-    "ANTS working practices.:UserWarning"
+    "ANTS working practices.:ants.exceptions.MetadataWarning"
 )
 def test_licence_attribute_written(tmp_path):
     """Tests that a cube with a licence  is changed and written out."""

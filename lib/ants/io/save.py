@@ -364,7 +364,7 @@ def _check_and_sort_metadata_attributes(cubes, data_filepath):
                     warnings.warn(
                         "The attribute name licence has been changed to "
                         "'license', in line with ANTS working practices.",
-                        category=UserWarning,
+                        category=ants.exceptions.MetadataWarning,
                     )
                     key = "license"
                 if key in attributes_to_save:
