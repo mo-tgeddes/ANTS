@@ -413,7 +413,7 @@ def _write_metadata_file(metadata, filename, attribute_name):
     # cases where metadata is being read in
     if any(isinstance(element, list) for element in metadata):
         metadata = np.concatenate(metadata).tolist()
-    with open(filepath, "a") as metadata_file:
+    with open(filepath, "w") as metadata_file:
         metadata_file.writelines(metadata)
     _LOGGER = logging.getLogger(__name__)
     _LOGGER.info(f"{attribute_name} has been written to sidecar file {filepath}")
