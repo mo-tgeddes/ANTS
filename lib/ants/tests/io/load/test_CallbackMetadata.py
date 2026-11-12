@@ -121,7 +121,7 @@ def test_attribute_already_on_cube():
     expected_message = (
         "The attribution is already an attribute on the "
         "cube. To ignore metadata files, use the "
-        "--ignore-metadata-files flag."
+        "--ignore-metadata-read flag."
     )
     with pytest.raises(AttributeError, match=expected_message):
         class_instance._retrieve_metadata(path, test_cube)
@@ -141,7 +141,7 @@ def test_misspelt_license_with_licensed_cube():
     expected_message = (
         "The license is already an attribute on the "
         "cube. To ignore metadata files, use the "
-        "--ignore-metadata-files flag."
+        "--ignore-metadata-read flag."
     )
     with pytest.raises(AttributeError, match=expected_message):
         class_instance._retrieve_metadata(path, test_cube)

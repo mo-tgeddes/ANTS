@@ -45,3 +45,21 @@ def test_different_elements_have_cube_names():
     cube_names = ["cube1", "cube2"]
     actual = _check_multiple_attributes(licenses, cube_names)
     assert expected == actual
+
+
+def test_multiple_of_same_attrubutes():
+    """Tests that in the case where there is both a local and global attribute,
+    both are correctly parsed."""
+    cube_names_dictionary = ["cube1", "cube1", "cube2"]
+    attribute_dictionary = [
+        "a local license on cube 1",
+        "a global license on cube 1",
+        "a global license on cube2",
+    ]
+    expected_attribute = [
+        "cube1 = a local license on cube 1\n",
+        "cube1 = a global license on cube 1\n",
+        "cube2 = a global license on cube2\n",
+    ]
+    actual = _check_multiple_attributes(attribute_dictionary, cube_names_dictionary)
+    assert expected_attribute == actual
