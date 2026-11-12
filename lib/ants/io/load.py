@@ -361,36 +361,21 @@ def _customised_load(func):
     def load_function(*args, **kwargs):
         # Ensure that we leave appropriate calling to the underlying iris load
         # function.
-
-        # TODO https://github.com/MetOffice/ANTS/issues/91, remove warning filter
-        # workaround when iris issue https://github.com/SciTools/iris/issues/5749 has
-        # been fixed.
-        with warnings.catch_warnings():
-            warnings.filterwarnings(
-                "ignore",
-                "Ignoring a datum in netCDF load for consistency with existing "
-                "behaviour. In a future version of Iris, this datum will be applied. "
-                "To apply the datum when loading, use the "
-                "iris.FUTURE.datum_support flag.",
-                FutureWarning,
-            )
-            # Check if metadata functionality has been turned off.
-            ignore_metadata_read =  kwargs.pop("ignore_metadata_read", False)
-            if not ignore_metadata_read:
-                # Get the inputs of the function.
-                # Chain any user callback after the metadata callback.
-                bound = inspect.signature(func).bind(*args, **kwargs)
-                bound.apply_defaults()
-                bound.arguments["callback"] = _CallbackMetadata(
-                    bound.arguments["callback"]
-                )
-                # Use context manager to avoid permanently modifying iris behaviour.
-                with ants_format_agent():
-                    cubes = func(*bound.args, **bound.kwargs)
-            else:
-                # Use context manager to avoid permanently modifying iris behaviour.
-                with ants_format_agent():
-                    cubes = func(*args, **kwargs)
+        # Check if metadata functionality has been turned off.
+        ignore_metadata_read = kwargs.pop("ignore_metadata_read", False)
+        if not ignore_metadata_read:
+            # Get the inputs of the function.
+            # Chain any user callback after the metadata callback.
+            bound = inspect.signature(func).bind(*args, **kwargs)
+            bound.apply_defaults()
+            bound.arguments["callback"] = _CallbackMetadata(bound.arguments["callback"])
+            # Use context manager to avoid permanently modifying iris behaviour.
+            with ants_format_agent():
+                cubes = func(*bound.args, **bound.kwargs)
+        else:
+            # Use context manager to avoid permanently modifying iris behaviour.
+            with ants_format_agent():
+                cubes = func(*args, **kwargs)
         if cubes is not None:
             try:
                 ants.utils.cube.derive_circular_status(cubes)
