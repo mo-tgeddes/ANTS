@@ -95,7 +95,12 @@ keep alongside the data as often data will have some form of requirement or rest
 on it. Because of this, ANTS can load in external metadata files, provided they match
 the naming convention of `filename.extension.accepted-metadata`. The current accepted
 metadata attributes are "license", "attribution", "restrictions", "institution",
-"acknowledgement", and "references".
+"acknowledgement", and "references". These metadata files must be in the same directory
+as the data files and share the same name (including the extension).
+
+Metadata can be loaded alongside all files, including NetCDF files, however ANTS will
+not allow you to load a file with a metadata attribute and a sidecar file with the same
+attribute. This is to prevent unintentional loss or overwriting of metadata information.
 
 This functionality can be turned off through the use of the argument
 ``--ignore-metadata-read`` on the command line or when calling the ANTS load:
@@ -108,12 +113,6 @@ This functionality can be turned off through the use of the argument
 .. note::
     Any attributes or files referencing licensing should use the 'license' spelling for
     consistency.
-
-ANTS can load in external metadata files or 'sidecar' files, if they are kept in the
-same directory as the data files, and have the same name (including the extension).
-Metadata can be loaded alongside all files, including NetCDF files, however ANTS will
-not allow you to load a file with a metadata attribute and a sidecar file with the same
-attribute. This is to prevent unintentional loss or overwriting of metadata information.
 
 .. note::
     When using wildcards for loading with sidecar files, add the file extension to the
