@@ -369,11 +369,11 @@ def _check_and_sort_metadata_attributes(cubes, data_filepath):
                     key = "license"
                 if key in attributes_to_save:
                     if key in metadata_dictionary:
+                        metadata_dictionary[key].append(value)
                         cube_names_dictionary[key].append(cube.name())
                     else:
                         metadata_dictionary[key] = [value]
                         cube_names_dictionary[key] = [cube.name()]
-    print("metadata dict: ", metadata_dictionary)
     for key, value in metadata_dictionary.items():
         # Update the metadata ready to save
         metadata_dictionary[key] = _check_multiple_attributes(
