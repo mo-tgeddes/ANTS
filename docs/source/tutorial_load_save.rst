@@ -92,7 +92,7 @@ directly affect that data. For example, licensing information or attributions.
 
 Some ancillary file formats cannot include metadata. Metadata can be very important to
 keep alongside the data as often data will have some form of requirement or restriction
-on it. Because of this, ANTS can handle in external metadata files, provided they match
+on it. Because of this, ANTS can load in external metadata files, provided they match
 the naming convention of `filename.extension.accepted-metadata`. The current accepted
 metadata attributes are "license", "attribution", "restrictions", "institution",
 "acknowledgement", and "references".
