@@ -116,7 +116,7 @@ def main(
     end : :obj:`datetime`, optional
         If provided, all source data after this year is discarded.  Default is to
         include all source data.
-    ignore_metadata_read : :obj:`bool`, optional
+    ignore_metadata_read : :obj:`bool`
         When set to True, files containing metadata will not be loaded alongside data
         and added as attributes to the cube.
     ignore_metadata_write : bool
