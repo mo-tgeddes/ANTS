@@ -68,9 +68,9 @@ def main(
         Grid staggering lookup, see UM F03 - FLH(9).
     netcdf_only : bool
         If True, only write to netCDF. If False, write to both netCDF and ancillary.
-    ignore_metadata_read : :obj:`bool`, optional
+    ignore_metadata_read : :obj:`bool`
         If True, do not read metadata sidecar files alongside the source.
-    ignore_metadata_write : :obj:`bool`, optional
+    ignore_metadata_write : :obj:`bool`
         If True, do not write metadata sidecar files alongside the ancillary.
 
     Returns

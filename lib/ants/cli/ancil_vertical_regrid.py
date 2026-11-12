@@ -26,7 +26,7 @@ def load_data(
     target_grid,
     begin=None,
     end=None,
-    ignore_metadata_read=None,
+    ignore_metadata_read=False,
 ):
     source_cubes = ants.io.load.load(source, ignore_metadata_read=ignore_metadata_read)
     if begin is not None:

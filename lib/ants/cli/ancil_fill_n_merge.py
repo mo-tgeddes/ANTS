@@ -163,7 +163,7 @@ def main(
         is applied. Note that this is in units of grid cells, not a physical distance.
         If ``None``, no blending is applied, and there will be a hard edge between
         the two sources.
-    ignore_metadata_read : :obj:`bool`, optional
+    ignore_metadata_read : :obj:`bool`
         When set to True, files containing metadata will not be loaded alongside data
         and added as attributes to the cube.
     ignore_metadata_write : bool

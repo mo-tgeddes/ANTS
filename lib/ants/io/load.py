@@ -375,9 +375,7 @@ def _customised_load(func):
                 FutureWarning,
             )
             # Check if metadata functionality has been turned off.
-            ignore_metadata_read = False
-            if "ignore_metadata_read" in kwargs:
-                ignore_metadata_read = kwargs.pop("ignore_metadata_read")
+            ignore_metadata_read =  kwargs.pop("ignore_metadata_read", False)
             if not ignore_metadata_read:
                 # Get the inputs of the function.
                 # Chain any user callback after the metadata callback.
@@ -464,7 +462,7 @@ class _CallbackMetadata:
                 raise AttributeError(
                     f"The {attribute_name} is already an attribute on the "
                     "cube. To ignore metadata files, use the "
-                    "--ignore-metadata-files flag."
+                    "--ignore-metadata-read flag."
                 )
             if attribute_name not in valid_metadata_names:
                 warnings.warn(

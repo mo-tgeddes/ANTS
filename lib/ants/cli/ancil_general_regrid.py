@@ -130,7 +130,10 @@ def main(
         When set to True, files containing metadata will not be loaded alongside data
         and added as attributes to the cube.
     ignore_metadata_write : :obj:`bool`, optional
-        If True, do not write metadata sidecar files alongside the ancillary.
+    ignore_metadata_read : :obj:`bool`
+        When set to True, files containing metadata will not be loaded alongside data
+        and added as attributes to the cube.
+    ignore_metadata_write : :obj:`bool`
 
     Returns
     -------
